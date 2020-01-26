@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
@@ -31,7 +32,7 @@ func parse(packet gopacket.Packet) {
 	if eth.EthernetType == 0x8915 {
 		fmt.Printf("%s RoCEv1 Packet:\n",
 			packet.Metadata().Timestamp)
-		fmt.Println(packet.Dump())
+		hex.Dump(eth.Payload)
 		return
 	}
 
@@ -44,7 +45,7 @@ func parse(packet gopacket.Packet) {
 	if udp.DstPort == 4791 {
 		fmt.Printf("%s RoCEv2 Packet:\n",
 			packet.Metadata().Timestamp)
-		fmt.Println(packet.Dump())
+		hex.Dump(udp.Payload)
 		return
 	}
 }
