@@ -21,15 +21,25 @@ var (
 
 // parsePayload parses the payload in buffer to extract llc messages
 func parsePayload(buffer []byte) {
+	fmt.Println("Payload:")
 	fmt.Println(hex.Dump(buffer))
+}
+
+// parseBTH parses the BTH header in buffer
+func parseBTH(buffer []byte) {
+	fmt.Println("BTH:")
+	fmt.Printf("%s", hex.Dump(buffer))
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) {
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
 	payload := buffer[40:]
+	// verify header?
+	// verify next header is BTH? nextHeader == 0x1B?
 
 	// Base Transport Header (BTH) is 12 bytes
+	parseBTH(buffer[:12])
 	payload = payload[12:]
 
 	// invariant CRC (ICRC) is 4 bytes
@@ -42,6 +52,7 @@ func parseRoCEv1(buffer []byte) {
 // parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
 func parseRoCEv2(buffer []byte) {
 	// Base Transport Header (BTH) is 12 bytes
+	parseBTH(buffer[:12])
 	payload := buffer[12:]
 
 	// invariant CRC (ICRC) is 4 bytes
