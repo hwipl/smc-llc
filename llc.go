@@ -73,8 +73,11 @@ func parse(packet gopacket.Packet) {
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
 	if eth.EthernetType == 0x8915 {
-		fmt.Printf("%s RoCEv1 Packet:\n",
-			packet.Metadata().Timestamp)
+		lf := packet.LinkLayer().LinkFlow()
+
+		fmt.Printf("%s RoCEv1 %s -> %s:\n",
+			packet.Metadata().Timestamp.Format("15:04:05.000000"),
+			lf.Src(), lf.Dst())
 		parseRoCEv1(eth.Payload)
 		return
 	}
@@ -86,8 +89,11 @@ func parse(packet gopacket.Packet) {
 	}
 	udp, _ := udpLayer.(*layers.UDP)
 	if udp.DstPort == 4791 {
-		fmt.Printf("%s RoCEv2 Packet:\n",
-			packet.Metadata().Timestamp)
+		nf := packet.NetworkLayer().NetworkFlow()
+
+		fmt.Printf("%s RoCEv2 %s -> %s:\n",
+			packet.Metadata().Timestamp.Format("15:04:05.000000"),
+			nf.Src(), nf.Dst())
 		parseRoCEv2(udp.Payload)
 		return
 	}
