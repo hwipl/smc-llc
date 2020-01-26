@@ -19,12 +19,39 @@ var (
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
 )
 
-// parsePayload parses the payload to extract llc messages
+// parsePayload parses the payload in buffer to extract llc messages
 func parsePayload(buffer []byte) {
 	fmt.Println(hex.Dump(buffer))
 }
 
-// parse extracts the ib payload from the packet and passes it to parsePayload
+// parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
+func parseRoCEv1(buffer []byte) {
+	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
+	payload := buffer[40:]
+
+	// Base Transport Header (BTH) is 12 bytes
+	payload = payload[12:]
+
+	// invariant CRC (ICRC) is 4 bytes
+	payload = payload[:len(payload)-4]
+
+	// parse payload
+	parsePayload(payload)
+}
+
+// parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
+func parseRoCEv2(buffer []byte) {
+	// Base Transport Header (BTH) is 12 bytes
+	payload := buffer[12:]
+
+	// invariant CRC (ICRC) is 4 bytes
+	payload = payload[:len(payload)-4]
+
+	// parse payload
+	parsePayload(payload)
+}
+
+// parse determines if packet is a RoCEv1 or RoCEv2 packet
 func parse(packet gopacket.Packet) {
 	// packet must be ethernet
 	ethLayer := packet.Layer(layers.LayerTypeEthernet)
@@ -37,8 +64,7 @@ func parse(packet gopacket.Packet) {
 	if eth.EthernetType == 0x8915 {
 		fmt.Printf("%s RoCEv1 Packet:\n",
 			packet.Metadata().Timestamp)
-		// skip ib Base Transport Header (12 bytes)
-		parsePayload(eth.Payload[12:])
+		parseRoCEv1(eth.Payload)
 		return
 	}
 
@@ -51,8 +77,7 @@ func parse(packet gopacket.Packet) {
 	if udp.DstPort == 4791 {
 		fmt.Printf("%s RoCEv2 Packet:\n",
 			packet.Metadata().Timestamp)
-		// skip ib Base Transport Header (12 bytes)
-		parsePayload(udp.Payload[12:])
+		parseRoCEv2(udp.Payload)
 		return
 	}
 }
