@@ -19,7 +19,12 @@ var (
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
 )
 
-// parse parses packet
+// parsePayload parses the payload to extract llc messages
+func parsePayload(buffer []byte) {
+	fmt.Println(hex.Dump(buffer))
+}
+
+// parse extracts the ib payload from the packet and passes it to parsePayload
 func parse(packet gopacket.Packet) {
 	// packet must be ethernet
 	ethLayer := packet.Layer(layers.LayerTypeEthernet)
@@ -32,7 +37,8 @@ func parse(packet gopacket.Packet) {
 	if eth.EthernetType == 0x8915 {
 		fmt.Printf("%s RoCEv1 Packet:\n",
 			packet.Metadata().Timestamp)
-		fmt.Println(hex.Dump(eth.Payload))
+		// skip ib Base Transport Header (12 bytes)
+		parsePayload(eth.Payload[12:])
 		return
 	}
 
@@ -45,7 +51,8 @@ func parse(packet gopacket.Packet) {
 	if udp.DstPort == 4791 {
 		fmt.Printf("%s RoCEv2 Packet:\n",
 			packet.Metadata().Timestamp)
-		fmt.Println(hex.Dump(udp.Payload))
+		// skip ib Base Transport Header (12 bytes)
+		parsePayload(udp.Payload[12:])
 		return
 	}
 }
