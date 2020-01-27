@@ -19,8 +19,22 @@ var (
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
 )
 
+// parseLLC parses the LLC message in buffer
+func parseLLC(buffer []byte) {
+	switch buffer[0] {
+	default:
+		fmt.Println("Unknown LLC message")
+	}
+}
+
 // parsePayload parses the payload in buffer to extract llc messages
 func parsePayload(buffer []byte) {
+	// llc messages are 44 byte long
+	if len(buffer) == 44 {
+		parseLLC(buffer)
+	}
+
+	// dump payload
 	fmt.Println("Payload:")
 	fmt.Println(hex.Dump(buffer))
 }
