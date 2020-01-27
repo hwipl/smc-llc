@@ -81,7 +81,7 @@ func parseConfirm(buffer []byte) {
 	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
-		"Max Links: %d, Reserved: %#x"
+		"Max Links: %d, Reserved: %#x\n"
 	fmt.Printf(cFmt, typ, length, res1, reply, res2, senderMAC, senderGID,
 		senderQP, link, senderLinkUserID, maxLinks, res3)
 }
@@ -101,6 +101,8 @@ func parsePayload(buffer []byte) {
 	// llc messages are 44 byte long
 	if len(buffer) == 44 {
 		parseLLC(buffer)
+		fmt.Println(hex.Dump(buffer))
+		return
 	}
 
 	// dump payload
