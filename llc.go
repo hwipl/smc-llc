@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
+	"net"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -19,9 +21,76 @@ var (
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
 )
 
+const (
+	TYPE_CONFIRM = 1
+)
+
+// parseConfirm parses the LLC confirm message in buffer
+func parseConfirm(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 1 byte
+	res1 := buffer[0]
+	buffer = buffer[1:]
+
+	// Reply is first bit in this byte
+	reply := (buffer[0] & 0b10000000) > 0
+
+	// Remainder of this byte is reserved
+	res2 := buffer[0] & 0b01111111
+	buffer = buffer[1:]
+
+	// sender MAC is a 6 byte MAC address
+	senderMAC := make(net.HardwareAddr, 6)
+	copy(senderMAC[:], buffer[0:6])
+	buffer = buffer[6:]
+
+	// sender GID is an 16 bytes IPv6 address
+	senderGID := make(net.IP, net.IPv6len)
+	copy(senderGID[:], buffer[0:16])
+	buffer = buffer[16:]
+
+	// QP number is 3 bytes
+	var senderQP uint32
+	senderQP = uint32(buffer[0]) << 16
+	senderQP |= uint32(buffer[1]) << 8
+	senderQP |= uint32(buffer[2])
+	buffer = buffer[3:]
+
+	// Link is 1 byte
+	link := buffer[0]
+	buffer = buffer[1:]
+
+	// Link User ID is 4 bytes
+	senderLinkUserID := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Max Links is 1 byte
+	maxLinks := buffer[0]
+	buffer = buffer[1:]
+
+	// Rest of message is reserved
+	res3 := buffer[:]
+
+	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
+		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
+		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
+		"Max Links: %d, Reserved: %#x"
+	fmt.Printf(cFmt, typ, length, res1, reply, res2, senderMAC, senderGID,
+		senderQP, link, senderLinkUserID, maxLinks, res3)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
+	case TYPE_CONFIRM:
+		parseConfirm(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
