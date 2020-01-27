@@ -112,6 +112,9 @@ func parsePayload(buffer []byte) {
 
 // parseBTH parses the BTH header in buffer
 func parseBTH(buffer []byte) {
+	// save complete bth for later
+	bth := buffer
+
 	// opcode is 1 byte
 	opcode := buffer[0]
 	buffer = buffer[1:]
@@ -151,7 +154,7 @@ func parseBTH(buffer []byte) {
 	buffer = buffer[3:]
 
 	// AckReq is first bis in this byte
-	a := buffer[0] & 0b10000000
+	a := (buffer[0] & 0b10000000) > 0
 
 	// Reserved are the last 7 bits in this byte
 	res2 := buffer[0] & 0b01111111
@@ -162,12 +165,12 @@ func parseBTH(buffer []byte) {
 	psn |= uint32(buffer[1]) << 8
 	psn |= uint32(buffer[2])
 
-	bfmt := "BTH: OpCode: %b, SE: %b, M: %b, Pad: %d, TVer: %d, " +
-		"PKey: %d, FECN: %b, BECN %b, Res: %#x, DestQP: %d, A: %b, " +
-		"Res: %#x, PSN: %d"
+	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
+		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
+		"A: %t, Res: %#x, PSN: %d\n"
 	fmt.Printf(bfmt, opcode, se, m, pad, tver, pkey, fecn, becn, res1,
 		destQP, a, res2, psn)
-	fmt.Printf("%s", hex.Dump(buffer))
+	fmt.Printf("%s", hex.Dump(bth))
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
