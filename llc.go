@@ -110,7 +110,61 @@ func parsePayload(buffer []byte) {
 
 // parseBTH parses the BTH header in buffer
 func parseBTH(buffer []byte) {
-	fmt.Println("BTH:")
+	// opcode is 1 byte
+	opcode := buffer[0]
+	buffer = buffer[1:]
+
+	// solicited event is first bit in this byte
+	se := (buffer[0] & 0b10000000) > 0
+
+	// MigReq is the next bit in this byte
+	m := (buffer[0] & 0b01000000) > 0
+
+	// pad count is the next 2 bits in this byte
+	pad := (buffer[0] & 0b00110000) >> 4
+
+	// transport header version is last 4 bits in this byte
+	tver := buffer[0] & 0b00001111
+	buffer = buffer[1:]
+
+	// partition key is 2 bytes
+	pkey := binary.BigEndian.Uint16(buffer[0:2])
+	buffer = buffer[2:]
+
+	// FECN is first bit in this byte
+	fecn := (buffer[0] & 0b10000000) > 0
+
+	// BECN is next bit in this byte
+	becn := (buffer[0] & 0b01000000) > 0
+
+	// Reserved are the last 6 bits in this byte
+	res1 := buffer[0] & 0b00111111
+	buffer = buffer[1:]
+
+	// destination QP number is 3 bytes
+	var destQP uint32
+	destQP = uint32(buffer[0]) << 16
+	destQP |= uint32(buffer[1]) << 8
+	destQP |= uint32(buffer[2])
+	buffer = buffer[3:]
+
+	// AckReq is first bis in this byte
+	a := buffer[0] & 0b10000000
+
+	// Reserved are the last 7 bits in this byte
+	res2 := buffer[0] & 0b01111111
+
+	// Packet Sequence Number is 3 bytes
+	var psn uint32
+	psn = uint32(buffer[0]) << 16
+	psn |= uint32(buffer[1]) << 8
+	psn |= uint32(buffer[2])
+
+	bfmt := "BTH: OpCode: %b, SE: %b, M: %b, Pad: %d, TVer: %d, " +
+		"PKey: %d, FECN: %b, BECN %b, Res: %#x, DestQP: %d, A: %b, " +
+		"Res: %#x, PSN: %d"
+	fmt.Printf(bfmt, opcode, se, m, pad, tver, pkey, fecn, becn, res1,
+		destQP, a, res2, psn)
 	fmt.Printf("%s", hex.Dump(buffer))
 }
 
