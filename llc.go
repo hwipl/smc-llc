@@ -29,6 +29,7 @@ const (
 	TYPE_DELETELINK       = 4
 	TYPE_CONFIRMRKEY      = 6
 	TYPE_CONFIRMRKEY_CONT = 8
+	TYPE_DELETERKEY       = 9
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -423,6 +424,92 @@ func parseConfirmRKeyCont(buffer []byte) {
 		otherVaddr2, otherLink3, otherRkey3, otherVaddr3, res4)
 }
 
+// parseDeleteRKey parses the LLC delete RKey message in buffer
+func parseDeleteRKey(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 1 byte
+	res1 := buffer[0]
+	buffer = buffer[1:]
+
+	// Reply is first bit in this byte
+	reply := (buffer[0] & 0b10000000) > 0
+
+	// Reserved is the next bit in this byte
+	res2 := (buffer[0] & 0b01000000) > 0
+
+	// Negative response flag is the next bit in this byte
+	z := (buffer[0] & 0b00100000) > 0
+
+	// Remainder of this byte is reserved
+	res3 := buffer[0] >> 3
+	buffer = buffer[1:]
+
+	// Count is 1 byte
+	count := buffer[0]
+	buffer = buffer[1:]
+
+	// Error Mask is 1 byte
+	errorMask := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved are 2 bytes
+	res4 := buffer[0:2]
+	buffer = buffer[2:]
+
+	// TODO: make this an array?
+	// First deleted RKey is 4 bytes
+	rkey1 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Second deleted RKey is 4 bytes
+	rkey2 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Third deleted RKey is 4 bytes
+	rkey3 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Fourth deleted RKey is 4 bytes
+	rkey4 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Fifth deleted RKey is 4 bytes
+	rkey5 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Sixth deleted RKey is 4 bytes
+	rkey6 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Seventh deleted RKey is 4 bytes
+	rkey7 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Eighth deleted RKey is 4 bytes
+	rkey8 := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Rest of message is reserved
+	res5 := buffer[:]
+
+	dFmt := "LLC Delete RKey: Type: %d, Length: %d, " +
+		"Reserved: %#x, Reply: %t, Reserved: %t, " +
+		"Negative Response: %t, Reserved: %#x, " +
+		"Count: %d, Error Mask: %#b, Reserved: %#x, RKey1: %d, " +
+		"RKey2: %d, RKey3: %d, RKey4: %d, RKey5: %d, RKey6: %d, " +
+		"RKey7: %d, RKey8: %d, Reserved: %#x\n"
+	fmt.Printf(dFmt, typ, length, res1, reply, res2, z, res3, count,
+		errorMask, res4, rkey1, rkey2, rkey3, rkey4, rkey5, rkey6,
+		rkey7, rkey8, res5)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
@@ -438,6 +525,8 @@ func parseLLC(buffer []byte) {
 		parseConfirmRKey(buffer)
 	case TYPE_CONFIRMRKEY_CONT:
 		parseConfirmRKeyCont(buffer)
+	case TYPE_DELETERKEY:
+		parseDeleteRKey(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
