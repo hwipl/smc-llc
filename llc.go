@@ -25,6 +25,7 @@ const (
 	TYPE_CONFIRM             = 1
 	TYPE_ADDLINK             = 2
 	TYPE_ADDLINKCONTINUATION = 3
+	TYPE_DELETELINK          = 4
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -228,6 +229,51 @@ func parseAddLinkContinuation(buffer []byte) {
 		referenceRKey2, newRKey2, newVirtualAddr2, res4)
 }
 
+// parseDeleteLink parses the LLC delete link message in buffer
+func parseDeleteLink(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 1 byte
+	res1 := buffer[0]
+	buffer = buffer[1:]
+
+	// Reply is first bit in this byte
+	reply := (buffer[0] & 0b10000000) > 0
+
+	// All is the next bit in this byte
+	all := (buffer[0] & 0b01000000) > 0
+
+	// Orderly is the next bit in this byte
+	orderly := (buffer[0] & 0b00100000) > 0
+
+	// Remainder of this byte is reserved
+	res2 := buffer[0] >> 1
+	buffer = buffer[1:]
+
+	// Link is 1 byte
+	link := buffer[0]
+	buffer = buffer[1:]
+
+	// Reason Code is 4 bytes
+	rsnCode := binary.BigEndian.Uint32(buffer[0:4])
+	buffer = buffer[4:]
+
+	// Rest of message is reserved
+	res3 := buffer[:]
+
+	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reserved: %#x, " +
+		"Reply: %t, All: %t, Orderly: %t, Reserved: %#x, Link: %d, " +
+		"Reason Code: %d, Reserved: %#x\n"
+	fmt.Printf(dFmt, typ, length, res1, reply, all, orderly, res2, link,
+		rsnCode, res3)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
@@ -237,6 +283,8 @@ func parseLLC(buffer []byte) {
 		parseAddLink(buffer)
 	case TYPE_ADDLINKCONTINUATION:
 		parseAddLinkContinuation(buffer)
+	case TYPE_DELETELINK:
+		parseDeleteLink(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
