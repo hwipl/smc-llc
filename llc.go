@@ -22,8 +22,9 @@ var (
 )
 
 const (
-	TYPE_CONFIRM = 1
-	TYPE_ADDLINK = 2
+	TYPE_CONFIRM             = 1
+	TYPE_ADDLINK             = 2
+	TYPE_ADDLINKCONTINUATION = 3
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -160,6 +161,73 @@ func parseAddLink(buffer []byte) {
 		senderGID, senderQP, link, res3, mtu, psn, res4)
 }
 
+// parseAddLinkContinuation parses the LLC add link continuation message in
+// buffer
+func parseAddLinkContinuation(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 1 byte
+	res1 := buffer[0]
+	buffer = buffer[1:]
+
+	// Reply is first bit in this byte
+	reply := (buffer[0] & 0b10000000) > 0
+
+	// Remainder of this byte is reserved
+	res2 := buffer[0] >> 1
+	buffer = buffer[1:]
+
+	// Link is 1 byte
+	link := buffer[0]
+	buffer = buffer[1:]
+
+	// Number of RTokens is 1 byte
+	numRTokens := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 2 bytes
+	res3 := buffer[0:2]
+	buffer = buffer[2:]
+
+	// RKey/RToken pairs are 16 bytes and consist of:
+	// * Reference Key (4 bytes)
+	// * New RKey (4 bytes)
+	// * New Virtual Address (8 bytes)
+	getRKeyPair := func() (uint32, uint32, uint64) {
+		referenceRKey := binary.BigEndian.Uint32(buffer[0:4])
+		newRKey := binary.BigEndian.Uint32(buffer[4:8])
+		newVirtualAddr := binary.BigEndian.Uint64(buffer[8:16])
+		return referenceRKey, newRKey, newVirtualAddr
+	}
+
+	// first RKey/RToken pair
+	referenceRKey1, newRKey1, newVirtualAddr1 := getRKeyPair()
+	buffer = buffer[16:]
+
+	// second RKey/RToken pair (can be all zero)
+	referenceRKey2, newRKey2, newVirtualAddr2 := getRKeyPair()
+	buffer = buffer[16:]
+
+	// Rest of message is reserved
+	res4 := buffer[:]
+
+	aFmt := "LLC Add Link Continuation: Type: %d, Length: %d, " +
+		"Reserved: %#x, Reply: %t, Reserved: %#x, Link: %d, " +
+		"Number of RTokens: %d, Reserved: %#x, " +
+		"Reference RKey 1: %d, New RKey 1: %d, " +
+		"New Virtual Address 1: %#x, Reference RKey 2: %d, " +
+		"New RKey 2: %d, New Virtual Address 2: %#x, Reserved : %#x\n"
+	fmt.Printf(aFmt, typ, length, res1, reply, res2, link, numRTokens,
+		res3, referenceRKey1, newRKey1, newVirtualAddr1,
+		referenceRKey2, newRKey2, newVirtualAddr2, res4)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
@@ -167,6 +235,8 @@ func parseLLC(buffer []byte) {
 		parseConfirm(buffer)
 	case TYPE_ADDLINK:
 		parseAddLink(buffer)
+	case TYPE_ADDLINKCONTINUATION:
+		parseAddLinkContinuation(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
