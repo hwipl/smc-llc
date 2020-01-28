@@ -153,8 +153,8 @@ func parseAddLink(buffer []byte) {
 	res4 := buffer[:]
 
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
-		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x " +
-		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d " +
+		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x, " +
+		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
 		"Reserved: %#x, MTU: %d, Initial PSN: %d, Reserved : %#x\n"
 	fmt.Printf(aFmt, typ, length, res1, rsnCode, r, z, res2, senderMAC,
 		senderGID, senderQP, link, res3, mtu, psn, res4)
