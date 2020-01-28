@@ -28,6 +28,7 @@ const (
 	TYPE_ADDLINK_CONT     = 3
 	TYPE_DELETELINK       = 4
 	TYPE_CONFIRMRKEY      = 6
+	TYPE_TESTLINK         = 7
 	TYPE_CONFIRMRKEY_CONT = 8
 	TYPE_DELETERKEY       = 9
 )
@@ -510,6 +511,39 @@ func parseDeleteRKey(buffer []byte) {
 		rkey7, rkey8, res5)
 }
 
+// parseTestLink parses the LLC test link message in buffer
+func parseTestLink(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved 1 byte
+	res1 := buffer[0]
+	buffer = buffer[1:]
+
+	// Reply is first bit in this byte
+	reply := (buffer[0] & 0b10000000) > 0
+
+	// Remainder of this byte is reserved
+	res2 := buffer[0] >> 1
+	buffer = buffer[1:]
+
+	// User data is 16 bytes
+	userData := buffer[0:16]
+	buffer = buffer[16:]
+
+	// Rest of message is reserved
+	res3 := buffer[:]
+
+	tFmt := "LLC Test Link: Type %d, Length: %d, Reserved: %#x, " +
+		"Reply: %t, Reserved: %#x, User Data: %#x, Reserved: %#x\n"
+	fmt.Printf(tFmt, typ, length, res1, reply, res2, userData, res3)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
@@ -527,6 +561,8 @@ func parseLLC(buffer []byte) {
 		parseConfirmRKeyCont(buffer)
 	case TYPE_DELETERKEY:
 		parseDeleteRKey(buffer)
+	case TYPE_TESTLINK:
+		parseTestLink(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
