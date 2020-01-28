@@ -23,11 +23,11 @@ var (
 
 const (
 	// LLC message types
-	TYPE_CONFIRM             = 1
-	TYPE_ADDLINK             = 2
-	TYPE_ADDLINKCONTINUATION = 3
-	TYPE_DELETELINK          = 4
-	TYPE_CONFIRMRKEY         = 6
+	TYPE_CONFIRM      = 1
+	TYPE_ADDLINK      = 2
+	TYPE_ADDLINK_CONT = 3
+	TYPE_DELETELINK   = 4
+	TYPE_CONFIRMRKEY  = 6
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -164,9 +164,8 @@ func parseAddLink(buffer []byte) {
 		senderGID, senderQP, link, res3, mtu, psn, res4)
 }
 
-// parseAddLinkContinuation parses the LLC add link continuation message in
-// buffer
-func parseAddLinkContinuation(buffer []byte) {
+// parseAddLinkCont parses the LLC add link continuation message in buffer
+func parseAddLinkCont(buffer []byte) {
 	// Message type is 1 byte
 	typ := buffer[0]
 	buffer = buffer[1:]
@@ -359,8 +358,8 @@ func parseLLC(buffer []byte) {
 		parseConfirm(buffer)
 	case TYPE_ADDLINK:
 		parseAddLink(buffer)
-	case TYPE_ADDLINKCONTINUATION:
-		parseAddLinkContinuation(buffer)
+	case TYPE_ADDLINK_CONT:
+		parseAddLinkCont(buffer)
 	case TYPE_DELETELINK:
 		parseDeleteLink(buffer)
 	case TYPE_CONFIRMRKEY:
