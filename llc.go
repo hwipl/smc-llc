@@ -23,6 +23,7 @@ var (
 
 const (
 	TYPE_CONFIRM = 1
+	TYPE_ADDLINK = 2
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -86,11 +87,86 @@ func parseConfirm(buffer []byte) {
 		senderQP, link, senderLinkUserID, maxLinks, res3)
 }
 
+// parseAddLink parses the LLC add link message in buffer
+func parseAddLink(buffer []byte) {
+	// Message type is 1 byte
+	typ := buffer[0]
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	length := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved are first 4 bits in this byte
+	res1 := buffer[0] >> 4
+
+	// Reason Code are the last 4 bits in this byte
+	rsnCode := buffer[0] & 0b00001111
+	buffer = buffer[1:]
+
+	// Reply flag is the first bit in this byte
+	r := (buffer[0] & 0b10000000) > 0
+
+	// Rejection flag is the next bit in this byte
+	z := (buffer[0] & 0b01000000) > 0
+
+	// Reserved are the last 6 bits in this byte
+	res2 := buffer[0] >> 2
+	buffer = buffer[1:]
+
+	// sender MAC is a 6 byte MAC address
+	senderMAC := make(net.HardwareAddr, 6)
+	copy(senderMAC[:], buffer[0:6])
+	buffer = buffer[6:]
+
+	// sender GID is an 16 bytes IPv6 address
+	senderGID := make(net.IP, net.IPv6len)
+	copy(senderGID[:], buffer[0:16])
+	buffer = buffer[16:]
+
+	// QP number is 3 bytes
+	var senderQP uint32
+	senderQP = uint32(buffer[0]) << 16
+	senderQP |= uint32(buffer[1]) << 8
+	senderQP |= uint32(buffer[2])
+	buffer = buffer[3:]
+
+	// Link is 1 byte
+	link := buffer[0]
+	buffer = buffer[1:]
+
+	// Reserved are the first 4 bits in this byte
+	res3 := buffer[0] >> 4
+
+	// MTU are the last 4 bits in this byte
+	mtu := buffer[0] & 0b00001111
+	buffer = buffer[1:]
+
+	// initial Packet Sequence Number is 3 bytes
+	var psn uint32
+	psn = uint32(buffer[0]) << 16
+	psn |= uint32(buffer[1]) << 8
+	psn |= uint32(buffer[2])
+	buffer = buffer[3:]
+
+	// Rest of message is reserved
+	res4 := buffer[:]
+
+	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
+		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x " +
+		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d " +
+		"Reserved: %#x, MTU: %d, Initial PSN: %d, Reserved : %#x\n"
+	fmt.Printf(aFmt, typ, length, res1, rsnCode, r, z, res2, senderMAC,
+		senderGID, senderQP, link, res3, mtu, psn, res4)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
 	case TYPE_CONFIRM:
 		parseConfirm(buffer)
+	case TYPE_ADDLINK:
+		parseAddLink(buffer)
 	default:
 		fmt.Println("Unknown LLC message")
 	}
