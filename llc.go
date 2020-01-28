@@ -411,13 +411,14 @@ func parseConfirmRKeyCont(buffer []byte) {
 	// Rest of message is reserved
 	res4 := buffer[:]
 
-	dFmt := "LLC Confirm RKey: Type: %d, Length: %d, Reserved: %#x, " +
-		"Reply: %t, Reserved: %t, Negative Response: %t, " +
-		"Reserved: %#x, Number of Tokens: %d, This RKey: %d, " +
-		"This VAddr: %#x, Other Link1: %d, Other RKey1: %d, " +
+	cFmt := "LLC Confirm RKey Continuation: Type: %d, Length: %d, " +
+		"Reserved: %#x, Reply: %t, Reserved: %t, " +
+		"Negative Response: %t, Reserved: %#x, " +
+		"Number of Tokens: %d, Other Link1: %d, Other RKey1: %d, " +
 		"Other Vaddr1: %#x, Other Link2: %d, Other RKey2: %d, " +
-		"Other Vaddr2: %#x, Reserved: %#x\n"
-	fmt.Printf(dFmt, typ, length, res1, reply, res2, z, res3, numTkns,
+		"Other Vaddr2: %#x, Other Link3: %d, Other RKey3: %d, " +
+		"Other Vaddr3: %#x, Reserved: %#x\n"
+	fmt.Printf(cFmt, typ, length, res1, reply, res2, z, res3, numTkns,
 		otherLink1, otherRkey1, otherVaddr1, otherLink2, otherRkey2,
 		otherVaddr2, otherLink3, otherRkey3, otherVaddr3, res4)
 }
