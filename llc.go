@@ -31,6 +31,7 @@ const (
 	TYPE_TESTLINK         = 7
 	TYPE_CONFIRMRKEY_CONT = 8
 	TYPE_DELETERKEY       = 9
+	TYPE_CDC              = 0xFE
 )
 
 // parseConfirm parses the LLC confirm message in buffer
@@ -563,6 +564,8 @@ func parseLLC(buffer []byte) {
 		parseDeleteRKey(buffer)
 	case TYPE_TESTLINK:
 		parseTestLink(buffer)
+	case TYPE_CDC:
+		fmt.Println("CDC message")
 	default:
 		fmt.Println("Unknown LLC message")
 	}
