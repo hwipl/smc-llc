@@ -377,11 +377,8 @@ func parseConfirmRKeyCont(buffer []byte) {
 	// Negative response flag is the next bit in this byte
 	z := (buffer[0] & 0b00100000) > 0
 
-	// Configuration Retry is the next bit in this byte
-	c := (buffer[0] & 0b00010000) > 0
-
 	// Remainder of this byte is reserved
-	res3 := buffer[0] >> 4
+	res3 := buffer[0] >> 3
 	buffer = buffer[1:]
 
 	// Number of tokens left is 1 byte
@@ -416,12 +413,11 @@ func parseConfirmRKeyCont(buffer []byte) {
 
 	dFmt := "LLC Confirm RKey: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %t, Negative Response: %t, " +
-		"Configuration Retry: %t, Reserved: %#x, " +
-		"Number of Tokens: %d, This RKey: %d, This VAddr: %#x, " +
-		"Other Link1: %d, Other RKey1: %d, Other Vaddr1: %#x, " +
-		"Other Link2: %d, Other RKey2: %d, Other Vaddr2: %#x, " +
-		"Reserved: %#x\n"
-	fmt.Printf(dFmt, typ, length, res1, reply, res2, z, c, res3, numTkns,
+		"Reserved: %#x, Number of Tokens: %d, This RKey: %d, " +
+		"This VAddr: %#x, Other Link1: %d, Other RKey1: %d, " +
+		"Other Vaddr1: %#x, Other Link2: %d, Other RKey2: %d, " +
+		"Other Vaddr2: %#x, Reserved: %#x\n"
+	fmt.Printf(dFmt, typ, length, res1, reply, res2, z, res3, numTkns,
 		otherLink1, otherRkey1, otherVaddr1, otherLink2, otherRkey2,
 		otherVaddr2, otherLink3, otherRkey3, otherVaddr3, res4)
 }
