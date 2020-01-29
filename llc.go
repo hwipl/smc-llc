@@ -23,7 +23,7 @@ var (
 
 const (
 	// LLC message types
-	TYPE_CONFIRM          = 1
+	TYPE_CONFIRMLINK      = 1
 	TYPE_ADDLINK          = 2
 	TYPE_ADDLINK_CONT     = 3
 	TYPE_DELETELINK       = 4
@@ -34,8 +34,8 @@ const (
 	TYPE_CDC              = 0xFE
 )
 
-// llcConfirm stores a LLC confirm message
-type llcConfirm struct {
+// confirmLink stores a LLC confirm message
+type confirmLink struct {
 	typ              uint8
 	length           uint8
 	res1             byte
@@ -50,8 +50,9 @@ type llcConfirm struct {
 	res3             []byte
 }
 
-// parse fills the llcConfirm fields from the LLC confirm message in buffer
-func (c *llcConfirm) parse(buffer []byte) {
+// parse fills the confirmLink fields from the LLC confirm link message in
+// buffer
+func (c *confirmLink) parse(buffer []byte) {
 	// Message type is 1 byte
 	c.typ = buffer[0]
 	buffer = buffer[1:]
@@ -103,8 +104,8 @@ func (c *llcConfirm) parse(buffer []byte) {
 	c.res3 = buffer[:]
 }
 
-// String converts LLC confirm message to string
-func (c *llcConfirm) String() string {
+// String converts the LLC confirm link message to string
+func (c *confirmLink) String() string {
 	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
@@ -114,9 +115,9 @@ func (c *llcConfirm) String() string {
 		c.senderLinkUserID, c.maxLinks, c.res3)
 }
 
-// parseConfirm parses and prints the LLC confirm message in buffer
+// parseConfirm parses and prints the LLC confirm link message in buffer
 func parseConfirm(buffer []byte) {
-	var confirm llcConfirm
+	var confirm confirmLink
 	confirm.parse(buffer)
 	fmt.Println(confirm)
 }
@@ -574,7 +575,7 @@ func parseTestLink(buffer []byte) {
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
-	case TYPE_CONFIRM:
+	case TYPE_CONFIRMLINK:
 		parseConfirm(buffer)
 	case TYPE_ADDLINK:
 		parseAddLink(buffer)
