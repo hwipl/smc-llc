@@ -122,77 +122,105 @@ func parseConfirm(buffer []byte) {
 	fmt.Println(confirm)
 }
 
-// parseAddLink parses the LLC add link message in buffer
-func parseAddLink(buffer []byte) {
+// addLink stores a LLC add link message
+type addLink struct {
+	typ       uint8
+	length    uint8
+	res1      byte
+	rsnCode   uint8
+	reply     bool
+	reject    bool
+	res2      byte
+	senderMAC net.HardwareAddr
+	senderGID net.IP
+	senderQP  uint32
+	link      uint8
+	res3      byte
+	mtu       uint8
+	psn       uint32
+	res4      []byte
+}
+
+// parse fills the addLink fields from the LLC add link message in buffer
+func (a *addLink) parse(buffer []byte) {
 	// Message type is 1 byte
-	typ := buffer[0]
+	a.typ = buffer[0]
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	length := buffer[0]
+	a.length = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved are first 4 bits in this byte
-	res1 := buffer[0] >> 4
+	a.res1 = buffer[0] >> 4
 
 	// Reason Code are the last 4 bits in this byte
-	rsnCode := buffer[0] & 0b00001111
+	a.rsnCode = buffer[0] & 0b00001111
 	buffer = buffer[1:]
 
 	// Reply flag is the first bit in this byte
-	r := (buffer[0] & 0b10000000) > 0
+	a.reply = (buffer[0] & 0b10000000) > 0
 
 	// Rejection flag is the next bit in this byte
-	z := (buffer[0] & 0b01000000) > 0
+	a.reject = (buffer[0] & 0b01000000) > 0
 
 	// Reserved are the last 6 bits in this byte
-	res2 := buffer[0] >> 2
+	a.res2 = buffer[0] >> 2
 	buffer = buffer[1:]
 
 	// sender MAC is a 6 byte MAC address
-	senderMAC := make(net.HardwareAddr, 6)
-	copy(senderMAC[:], buffer[0:6])
+	a.senderMAC = make(net.HardwareAddr, 6)
+	copy(a.senderMAC[:], buffer[0:6])
 	buffer = buffer[6:]
 
 	// sender GID is an 16 bytes IPv6 address
-	senderGID := make(net.IP, net.IPv6len)
-	copy(senderGID[:], buffer[0:16])
+	a.senderGID = make(net.IP, net.IPv6len)
+	copy(a.senderGID[:], buffer[0:16])
 	buffer = buffer[16:]
 
 	// QP number is 3 bytes
-	var senderQP uint32
-	senderQP = uint32(buffer[0]) << 16
-	senderQP |= uint32(buffer[1]) << 8
-	senderQP |= uint32(buffer[2])
+	a.senderQP = uint32(buffer[0]) << 16
+	a.senderQP |= uint32(buffer[1]) << 8
+	a.senderQP |= uint32(buffer[2])
 	buffer = buffer[3:]
 
 	// Link is 1 byte
-	link := buffer[0]
+	a.link = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved are the first 4 bits in this byte
-	res3 := buffer[0] >> 4
+	a.res3 = buffer[0] >> 4
 
 	// MTU are the last 4 bits in this byte
-	mtu := buffer[0] & 0b00001111
+	a.mtu = buffer[0] & 0b00001111
 	buffer = buffer[1:]
 
 	// initial Packet Sequence Number is 3 bytes
-	var psn uint32
-	psn = uint32(buffer[0]) << 16
-	psn |= uint32(buffer[1]) << 8
-	psn |= uint32(buffer[2])
+	a.psn = uint32(buffer[0]) << 16
+	a.psn |= uint32(buffer[1]) << 8
+	a.psn |= uint32(buffer[2])
 	buffer = buffer[3:]
 
 	// Rest of message is reserved
-	res4 := buffer[:]
+	a.res4 = buffer[:]
+}
 
+// String converts the LLC add link message to string
+func (a *addLink) String() string {
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
 		"Reserved: %#x, MTU: %d, Initial PSN: %d, Reserved : %#x\n"
-	fmt.Printf(aFmt, typ, length, res1, rsnCode, r, z, res2, senderMAC,
-		senderGID, senderQP, link, res3, mtu, psn, res4)
+	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.rsnCode, a.reply,
+		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
+		a.res3, a.mtu, a.psn, a.res4)
+}
+
+// parseAddLink parses and prints the LLC add link message in buffer
+func parseAddLink(buffer []byte) {
+	var add addLink
+	add.parse(buffer)
+	fmt.Println(add)
 }
 
 // parseAddLinkCont parses the LLC add link continuation message in buffer
