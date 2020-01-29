@@ -212,15 +212,15 @@ func (a *addLink) String() string {
 	// convert mtu
 	switch a.mtu {
 	case 1:
-		mtu = "256"
+		mtu = "1 (256)"
 	case 2:
-		mtu = "512"
+		mtu = "2 (512)"
 	case 3:
-		mtu = "1024"
+		mtu = "3 (1024)"
 	case 4:
-		mtu = "2048"
+		mtu = "4 (2048)"
 	case 5:
-		mtu = "4096"
+		mtu = "5 (4096)"
 	default:
 		mtu = "reserved"
 	}
@@ -228,7 +228,7 @@ func (a *addLink) String() string {
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
-		"Reserved: %#x, MTU: %d, Initial PSN: %d, Reserved : %#x\n"
+		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved : %#x\n"
 	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.rsnCode, a.reply,
 		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
 		a.res3, mtu, a.psn, a.res4)
