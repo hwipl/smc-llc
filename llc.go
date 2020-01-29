@@ -208,6 +208,7 @@ func (a *addLink) parse(buffer []byte) {
 // String converts the LLC add link message to string
 func (a *addLink) String() string {
 	var mtu string
+	var rsn string
 
 	// convert mtu
 	switch a.mtu {
@@ -225,11 +226,19 @@ func (a *addLink) String() string {
 		mtu = "reserved"
 	}
 
+	// convert reason code
+	switch a.rsnCode {
+	case 1:
+		rsn = "1 (no alternate path available)"
+	case 2:
+		rsn = "2 (invalid MTU value specified)"
+	}
+
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
-		"Reason Code: %d, Reply: %t, Rejection: %t, Reserved: %#x, " +
+		"Reason Code: %s, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
 		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved : %#x\n"
-	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.rsnCode, a.reply,
+	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, rsn, a.reply,
 		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
 		a.res3, mtu, a.psn, a.res4)
 }
