@@ -23,15 +23,15 @@ var (
 
 const (
 	// LLC message types
-	TYPE_CONFIRMLINK      = 1
-	TYPE_ADDLINK          = 2
-	TYPE_ADDLINK_CONT     = 3
-	TYPE_DELETELINK       = 4
-	TYPE_CONFIRMRKEY      = 6
-	TYPE_TESTLINK         = 7
-	TYPE_CONFIRMRKEY_CONT = 8
-	TYPE_DELETERKEY       = 9
-	TYPE_CDC              = 0xFE
+	typeConfirmLink     = 1
+	typeAddLink         = 2
+	typeAddLinkCont     = 3
+	typeDeleteLink      = 4
+	typeConfirmRKey     = 6
+	typeTestLink        = 7
+	typeConfirmRKeyCont = 8
+	typeDeleteRKey      = 9
+	typeCDC             = 0xFE
 )
 
 // confirmLink stores a LLC confirm message
@@ -672,23 +672,23 @@ func parseTestLink(buffer []byte) {
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
-	case TYPE_CONFIRMLINK:
+	case typeConfirmLink:
 		parseConfirm(buffer)
-	case TYPE_ADDLINK:
+	case typeAddLink:
 		parseAddLink(buffer)
-	case TYPE_ADDLINK_CONT:
+	case typeAddLinkCont:
 		parseAddLinkCont(buffer)
-	case TYPE_DELETELINK:
+	case typeDeleteLink:
 		parseDeleteLink(buffer)
-	case TYPE_CONFIRMRKEY:
+	case typeConfirmRKey:
 		parseConfirmRKey(buffer)
-	case TYPE_CONFIRMRKEY_CONT:
+	case typeConfirmRKeyCont:
 		parseConfirmRKeyCont(buffer)
-	case TYPE_DELETERKEY:
+	case typeDeleteRKey:
 		parseDeleteRKey(buffer)
-	case TYPE_TESTLINK:
+	case typeTestLink:
 		parseTestLink(buffer)
-	case TYPE_CDC:
+	case typeCDC:
 		fmt.Println("CDC message")
 	default:
 		fmt.Println("Unknown LLC message")
