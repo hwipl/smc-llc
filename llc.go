@@ -34,65 +34,91 @@ const (
 	TYPE_CDC              = 0xFE
 )
 
-// parseConfirm parses the LLC confirm message in buffer
-func parseConfirm(buffer []byte) {
+// llcConfirm stores a LLC confirm message
+type llcConfirm struct {
+	typ              uint8
+	length           uint8
+	res1             byte
+	reply            bool
+	res2             byte
+	senderMAC        net.HardwareAddr
+	senderGID        net.IP
+	senderQP         uint32
+	link             uint8
+	senderLinkUserID uint32
+	maxLinks         uint8
+	res3             []byte
+}
+
+// parse fills the llcConfirm fields from the LLC confirm message in buffer
+func (c *llcConfirm) parse(buffer []byte) {
 	// Message type is 1 byte
-	typ := buffer[0]
+	c.typ = buffer[0]
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	length := buffer[0]
+	c.length = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
-	res1 := buffer[0]
+	c.res1 = buffer[0]
 	buffer = buffer[1:]
 
 	// Reply is first bit in this byte
-	reply := (buffer[0] & 0b10000000) > 0
+	c.reply = (buffer[0] & 0b10000000) > 0
 
 	// Remainder of this byte is reserved
-	res2 := buffer[0] & 0b01111111
+	c.res2 = buffer[0] & 0b01111111
 	buffer = buffer[1:]
 
 	// sender MAC is a 6 byte MAC address
-	senderMAC := make(net.HardwareAddr, 6)
-	copy(senderMAC[:], buffer[0:6])
+	c.senderMAC = make(net.HardwareAddr, 6)
+	copy(c.senderMAC[:], buffer[0:6])
 	buffer = buffer[6:]
 
 	// sender GID is an 16 bytes IPv6 address
-	senderGID := make(net.IP, net.IPv6len)
-	copy(senderGID[:], buffer[0:16])
+	c.senderGID = make(net.IP, net.IPv6len)
+	copy(c.senderGID[:], buffer[0:16])
 	buffer = buffer[16:]
 
 	// QP number is 3 bytes
-	var senderQP uint32
-	senderQP = uint32(buffer[0]) << 16
-	senderQP |= uint32(buffer[1]) << 8
-	senderQP |= uint32(buffer[2])
+	c.senderQP = uint32(buffer[0]) << 16
+	c.senderQP |= uint32(buffer[1]) << 8
+	c.senderQP |= uint32(buffer[2])
 	buffer = buffer[3:]
 
 	// Link is 1 byte
-	link := buffer[0]
+	c.link = buffer[0]
 	buffer = buffer[1:]
 
 	// Link User ID is 4 bytes
-	senderLinkUserID := binary.BigEndian.Uint32(buffer[0:4])
+	c.senderLinkUserID = binary.BigEndian.Uint32(buffer[0:4])
 	buffer = buffer[4:]
 
 	// Max Links is 1 byte
-	maxLinks := buffer[0]
+	c.maxLinks = buffer[0]
 	buffer = buffer[1:]
 
 	// Rest of message is reserved
-	res3 := buffer[:]
+	c.res3 = buffer[:]
+}
 
+// String converts LLC confirm message to string
+func (c *llcConfirm) String() string {
 	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
 		"Max Links: %d, Reserved: %#x\n"
-	fmt.Printf(cFmt, typ, length, res1, reply, res2, senderMAC, senderGID,
-		senderQP, link, senderLinkUserID, maxLinks, res3)
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.res1, c.reply, c.res2,
+		c.senderMAC, c.senderGID, c.senderQP, c.link,
+		c.senderLinkUserID, c.maxLinks, c.res3)
+}
+
+// parseConfirm parses and prints the LLC confirm message in buffer
+func parseConfirm(buffer []byte) {
+	var confirm llcConfirm
+	confirm.parse(buffer)
+	fmt.Println(confirm)
 }
 
 // parseAddLink parses the LLC add link message in buffer
