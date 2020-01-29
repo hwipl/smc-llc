@@ -122,6 +122,32 @@ func parseConfirm(buffer []byte) {
 	fmt.Println(confirm)
 }
 
+// qpMTU stores the compressed MTU of a QP, taken from smc-clc
+type qpMTU uint8
+
+// String converts qpMTU to a string including the uncompressed MTU, taken from
+// smc-clc
+func (m qpMTU) String() string {
+	var mtu string
+
+	switch m {
+	case 1:
+		mtu = "256"
+	case 2:
+		mtu = "512"
+	case 3:
+		mtu = "1024"
+	case 4:
+		mtu = "2048"
+	case 5:
+		mtu = "4096"
+	default:
+		mtu = "reserved"
+	}
+
+	return fmt.Sprintf("%d (%s)", m, mtu)
+}
+
 // addLink stores a LLC add link message
 type addLink struct {
 	typ       uint8
@@ -136,7 +162,7 @@ type addLink struct {
 	senderQP  uint32
 	link      uint8
 	res3      byte
-	mtu       uint8
+	mtu       qpMTU
 	psn       uint32
 	res4      []byte
 }
@@ -192,7 +218,7 @@ func (a *addLink) parse(buffer []byte) {
 	a.res3 = buffer[0] >> 4
 
 	// MTU are the last 4 bits in this byte
-	a.mtu = buffer[0] & 0b00001111
+	a.mtu = qpMTU(buffer[0] & 0b00001111)
 	buffer = buffer[1:]
 
 	// initial Packet Sequence Number is 3 bytes
@@ -207,24 +233,7 @@ func (a *addLink) parse(buffer []byte) {
 
 // String converts the LLC add link message to string
 func (a *addLink) String() string {
-	var mtu string
 	var rsn string
-
-	// convert mtu
-	switch a.mtu {
-	case 1:
-		mtu = "1 (256)"
-	case 2:
-		mtu = "2 (512)"
-	case 3:
-		mtu = "3 (1024)"
-	case 4:
-		mtu = "4 (2048)"
-	case 5:
-		mtu = "5 (4096)"
-	default:
-		mtu = "reserved"
-	}
 
 	// convert reason code
 	switch a.rsnCode {
@@ -240,7 +249,7 @@ func (a *addLink) String() string {
 		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved : %#x\n"
 	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, rsn, a.reply,
 		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
-		a.res3, mtu, a.psn, a.res4)
+		a.res3, a.mtu, a.psn, a.res4)
 }
 
 // parseAddLink parses and prints the LLC add link message in buffer
