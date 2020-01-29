@@ -148,12 +148,31 @@ func (m qpMTU) String() string {
 	return fmt.Sprintf("%d (%s)", m, mtu)
 }
 
+// rsnCode stores the reason code of LLC add link messages
+type rsnCode uint8
+
+// String converts the reason code to a string
+func (r rsnCode) String() string {
+	var rsn string
+
+	switch r {
+	case 1:
+		rsn = "no alternate path available"
+	case 2:
+		rsn = "invalid MTU value specified"
+	default:
+		rsn = "unknown"
+	}
+
+	return fmt.Sprintf("%d (%s)", r, rsn)
+}
+
 // addLink stores a LLC add link message
 type addLink struct {
 	typ       uint8
 	length    uint8
 	res1      byte
-	rsnCode   uint8
+	rsnCode   rsnCode
 	reply     bool
 	reject    bool
 	res2      byte
@@ -181,7 +200,7 @@ func (a *addLink) parse(buffer []byte) {
 	a.res1 = buffer[0] >> 4
 
 	// Reason Code are the last 4 bits in this byte
-	a.rsnCode = buffer[0] & 0b00001111
+	a.rsnCode = rsnCode(buffer[0] & 0b00001111)
 	buffer = buffer[1:]
 
 	// Reply flag is the first bit in this byte
@@ -233,21 +252,11 @@ func (a *addLink) parse(buffer []byte) {
 
 // String converts the LLC add link message to string
 func (a *addLink) String() string {
-	var rsn string
-
-	// convert reason code
-	switch a.rsnCode {
-	case 1:
-		rsn = "1 (no alternate path available)"
-	case 2:
-		rsn = "2 (invalid MTU value specified)"
-	}
-
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reason Code: %s, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
 		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved : %#x\n"
-	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, rsn, a.reply,
+	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.rsnCode, a.reply,
 		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
 		a.res3, a.mtu, a.psn, a.res4)
 }
