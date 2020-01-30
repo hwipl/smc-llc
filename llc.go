@@ -210,7 +210,7 @@ func (a *addLink) parse(buffer []byte) {
 	a.reject = (buffer[0] & 0b01000000) > 0
 
 	// Reserved are the last 6 bits in this byte
-	a.res2 = buffer[0] >> 2
+	a.res2 = buffer[0] & 0b00111111
 	buffer = buffer[1:]
 
 	// sender MAC is a 6 byte MAC address
@@ -325,7 +325,7 @@ func (a *addLinkCont) parse(buffer []byte) {
 	a.reply = (buffer[0] & 0b10000000) > 0
 
 	// Remainder of this byte is reserved
-	a.res2 = buffer[0] >> 1
+	a.res2 = buffer[0] & 0b01111111
 	buffer = buffer[1:]
 
 	// Link is 1 byte
@@ -445,7 +445,7 @@ func (d *deleteLink) parse(buffer []byte) {
 	d.orderly = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	d.res2 = buffer[0] >> 1
+	d.res2 = buffer[0] & 0b00011111
 	buffer = buffer[1:]
 
 	// Link is 1 byte
@@ -544,7 +544,7 @@ func (c *confirmRKey) parse(buffer []byte) {
 	c.retry = (buffer[0] & 0b00010000) > 0
 
 	// Remainder of this byte is reserved
-	c.res3 = buffer[0] >> 4
+	c.res3 = buffer[0] & 0b00001111
 	buffer = buffer[1:]
 
 	// Number of tokens is 1 byte
@@ -638,7 +638,7 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 	c.reject = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	c.res3 = buffer[0] >> 3
+	c.res3 = buffer[0] & 0b00011111
 	buffer = buffer[1:]
 
 	// Number of tokens left is 1 byte
@@ -724,7 +724,7 @@ func (d *deleteRKey) parse(buffer []byte) {
 	d.reject = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	d.res3 = buffer[0] >> 3
+	d.res3 = buffer[0] & 0b00011111
 	buffer = buffer[1:]
 
 	// Count is 1 byte
@@ -810,7 +810,7 @@ func (t *testLink) parse(buffer []byte) {
 	t.reply = (buffer[0] & 0b10000000) > 0
 
 	// Remainder of this byte is reserved
-	t.res2 = buffer[0] >> 1
+	t.res2 = buffer[0] & 0b01111111
 	buffer = buffer[1:]
 
 	// User data is 16 bytes
