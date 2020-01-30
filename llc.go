@@ -47,7 +47,7 @@ type confirmLink struct {
 	link             uint8
 	senderLinkUserID uint32
 	maxLinks         uint8
-	res3             []byte
+	res3             [9]byte
 }
 
 // parse fills the confirmLink fields from the LLC confirm link message in
@@ -101,7 +101,7 @@ func (c *confirmLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Rest of message is reserved
-	c.res3 = buffer[:]
+	copy(c.res3[:], buffer[:])
 }
 
 // String converts the LLC confirm link message to string
@@ -183,7 +183,7 @@ type addLink struct {
 	res3      byte
 	mtu       qpMTU
 	psn       uint32
-	res4      []byte
+	res4      [10]byte
 }
 
 // parse fills the addLink fields from the LLC add link message in buffer
@@ -247,7 +247,7 @@ func (a *addLink) parse(buffer []byte) {
 	buffer = buffer[3:]
 
 	// Rest of message is reserved
-	a.res4 = buffer[:]
+	copy(a.res4[:], buffer[:])
 }
 
 // String converts the LLC add link message to string
@@ -303,7 +303,7 @@ type addLinkCont struct {
 	numRTokens uint8
 	res3       [2]byte
 	rkeyPairs  [2]rkeyPair
-	res4       []byte
+	res4       [4]byte
 }
 
 // parse fills the addLinkCont fields from the LLC add link continuation
@@ -350,7 +350,7 @@ func (a *addLinkCont) parse(buffer []byte) {
 	}
 
 	// Rest of message is reserved
-	a.res4 = buffer[:]
+	copy(a.res4[:], buffer[:])
 }
 
 // String converts the add link continuation message to a string
@@ -418,7 +418,7 @@ type deleteLink struct {
 	res2    byte
 	link    uint8
 	rsnCode delLinkRsnCode
-	res3    []byte
+	res3    [35]byte
 }
 
 // parse fills the deleteLink fields from the LLC delete link message in buffer
@@ -457,7 +457,7 @@ func (d *deleteLink) parse(buffer []byte) {
 	buffer = buffer[4:]
 
 	// Rest of message is reserved
-	d.res3 = buffer[:]
+	copy(d.res3[:], buffer[:])
 }
 
 // String converts the delete link message to a string
@@ -514,7 +514,7 @@ type confirmRKey struct {
 	rkey      uint32
 	vaddr     uint64
 	otherRMBs [2]rmbSpec
-	res4      []byte
+	res4      byte
 }
 
 // parse fills the confirmRKey fields from the confirm RKey message in buffer
@@ -569,7 +569,7 @@ func (c *confirmRKey) parse(buffer []byte) {
 	}
 
 	// Rest of message is reserved
-	c.res4 = buffer[:]
+	c.res4 = buffer[0]
 }
 
 // String converts the confirm RKey message to a string
@@ -609,7 +609,7 @@ type confirmRKeyCont struct {
 	res3      byte
 	numTkns   uint8
 	otherRMBs [3]rmbSpec
-	res4      []byte
+	res4      byte
 }
 
 // parse fills the confirmRKey fields from the confirm RKey continuation
@@ -656,7 +656,7 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 	}
 
 	// Rest of message is reserved
-	c.res4 = buffer[:]
+	c.res4 = buffer[0]
 }
 
 // String converts the confirm RKey continuation message to a string
@@ -697,7 +697,7 @@ type deleteRKey struct {
 	errorMask byte
 	res4      [2]byte
 	rkeys     [8]uint32
-	res5      []byte
+	res5      [4]byte
 }
 
 // parse fills the deleteRKey fields from the delete RKey message in buffer
@@ -755,7 +755,7 @@ func (d *deleteRKey) parse(buffer []byte) {
 	}
 
 	// Rest of message is reserved
-	d.res5 = buffer[:]
+	copy(d.res5[:], buffer[:])
 }
 
 // String converts the delete RKey message to a string
@@ -789,7 +789,7 @@ type testLink struct {
 	reply    bool
 	res2     byte
 	userData [16]byte
-	res3     []byte
+	res3     [24]byte
 }
 
 // parse fills the testLink fields from the test link message in buffer
@@ -818,7 +818,7 @@ func (t *testLink) parse(buffer []byte) {
 	buffer = buffer[16:]
 
 	// Rest of message is reserved
-	t.res3 = buffer[:]
+	copy(t.res3[:], buffer[:])
 }
 
 // String converts the test link message to a string
