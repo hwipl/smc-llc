@@ -504,7 +504,7 @@ func (c *confirmRKey) parse(buffer []byte) {
 	c.reply = (buffer[0] & 0b10000000) > 0
 
 	// Reserved is the next bit in this byte
-	c.res2 = buffer[0] & 0b01000000
+	c.res2 = (buffer[0] & 0b01000000) >> 6
 
 	// Negative response flag is the next bit in this byte
 	c.reject = (buffer[0] & 0b00100000) > 0
