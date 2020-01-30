@@ -376,49 +376,73 @@ func parseAddLinkCont(buffer []byte) {
 	fmt.Println(addCont)
 }
 
-// parseDeleteLink parses the LLC delete link message in buffer
-func parseDeleteLink(buffer []byte) {
+// delteLink stores a LLC delete link message
+type deleteLink struct {
+	typ     uint8
+	length  uint8
+	res1    byte
+	reply   bool
+	all     bool
+	orderly bool
+	res2    byte
+	link    uint8
+	rsnCode uint32
+	res3    []byte
+}
+
+// parse fills the deleteLink fields from the LLC delete link message in buffer
+func (d *deleteLink) parse(buffer []byte) {
 	// Message type is 1 byte
-	typ := buffer[0]
+	d.typ = buffer[0]
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	length := buffer[0]
+	d.length = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
-	res1 := buffer[0]
+	d.res1 = buffer[0]
 	buffer = buffer[1:]
 
 	// Reply is first bit in this byte
-	reply := (buffer[0] & 0b10000000) > 0
+	d.reply = (buffer[0] & 0b10000000) > 0
 
 	// All is the next bit in this byte
-	all := (buffer[0] & 0b01000000) > 0
+	d.all = (buffer[0] & 0b01000000) > 0
 
 	// Orderly is the next bit in this byte
-	orderly := (buffer[0] & 0b00100000) > 0
+	d.orderly = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	res2 := buffer[0] >> 1
+	d.res2 = buffer[0] >> 1
 	buffer = buffer[1:]
 
 	// Link is 1 byte
-	link := buffer[0]
+	d.link = buffer[0]
 	buffer = buffer[1:]
 
 	// Reason Code is 4 bytes
-	rsnCode := binary.BigEndian.Uint32(buffer[0:4])
+	d.rsnCode = binary.BigEndian.Uint32(buffer[0:4])
 	buffer = buffer[4:]
 
 	// Rest of message is reserved
-	res3 := buffer[:]
+	d.res3 = buffer[:]
+}
 
+// String converts the delete link message to a string
+func (d *deleteLink) String() string {
 	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, All: %t, Orderly: %t, Reserved: %#x, Link: %d, " +
 		"Reason Code: %d, Reserved: %#x\n"
-	fmt.Printf(dFmt, typ, length, res1, reply, all, orderly, res2, link,
-		rsnCode, res3)
+	return fmt.Sprintf(dFmt, d.typ, d.length, d.res1, d.reply, d.all,
+		d.orderly, d.res2, d.link, d.rsnCode, d.res3)
+}
+
+// parseDeleteLink parses the LLC delete link message in buffer
+func parseDeleteLink(buffer []byte) {
+	var del deleteLink
+	del.parse(buffer)
+	fmt.Println(del)
 }
 
 // parseConfirmRKey parses the LLC confirm RKey message in buffer
