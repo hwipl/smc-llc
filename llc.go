@@ -651,90 +651,101 @@ func parseConfirmRKeyCont(buffer []byte) {
 	fmt.Println(confirmCont)
 }
 
-// parseDeleteRKey parses the LLC delete RKey message in buffer
-func parseDeleteRKey(buffer []byte) {
+// deleteRKey stores a LLC delete RKey message
+type deleteRKey struct {
+	typ       uint8
+	length    uint8
+	res1      byte
+	reply     bool
+	res2      byte
+	reject    bool // negative response
+	res3      byte
+	count     uint8
+	errorMask byte
+	res4      [2]byte
+	rkeys     [8]uint32
+	res5      []byte
+}
+
+// parse fills the deleteRKey fields from the delete RKey message in buffer
+func (d *deleteRKey) parse(buffer []byte) {
 	// Message type is 1 byte
-	typ := buffer[0]
+	d.typ = buffer[0]
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	length := buffer[0]
+	d.length = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
-	res1 := buffer[0]
+	d.res1 = buffer[0]
 	buffer = buffer[1:]
 
 	// Reply is first bit in this byte
-	reply := (buffer[0] & 0b10000000) > 0
+	d.reply = (buffer[0] & 0b10000000) > 0
 
 	// Reserved is the next bit in this byte
-	res2 := (buffer[0] & 0b01000000) > 0
+	d.res2 = (buffer[0] & 0b01000000) >> 6
 
 	// Negative response flag is the next bit in this byte
-	z := (buffer[0] & 0b00100000) > 0
+	d.reject = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	res3 := buffer[0] >> 3
+	d.res3 = buffer[0] >> 3
 	buffer = buffer[1:]
 
 	// Count is 1 byte
-	count := buffer[0]
+	d.count = buffer[0]
 	buffer = buffer[1:]
 
 	// Error Mask is 1 byte
-	errorMask := buffer[0]
+	d.errorMask = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved are 2 bytes
-	res4 := buffer[0:2]
+	copy(d.res4[:], buffer[0:2])
 	buffer = buffer[2:]
 
-	// TODO: make this an array?
-	// First deleted RKey is 4 bytes
-	rkey1 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Second deleted RKey is 4 bytes
-	rkey2 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Third deleted RKey is 4 bytes
-	rkey3 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Fourth deleted RKey is 4 bytes
-	rkey4 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Fifth deleted RKey is 4 bytes
-	rkey5 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Sixth deleted RKey is 4 bytes
-	rkey6 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Seventh deleted RKey is 4 bytes
-	rkey7 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
-
-	// Eighth deleted RKey is 4 bytes
-	rkey8 := binary.BigEndian.Uint32(buffer[0:4])
-	buffer = buffer[4:]
+	// Deleted RKeys are each 4 bytes
+	// parse
+	// * First deleted RKey
+	// * Second deleted RKey
+	// * Third deleted RKey
+	// * Fourth deleted RKey
+	// * Fifth deleted RKey
+	// * Sixth deleted RKey
+	// * Seventh deleted RKey
+	// * Eighth deleted RKey
+	for i := range d.rkeys {
+		d.rkeys[i] = binary.BigEndian.Uint32(buffer[0:4])
+		buffer = buffer[4:]
+	}
 
 	// Rest of message is reserved
-	res5 := buffer[:]
+	d.res5 = buffer[:]
+}
+
+// String converts the delete RKey message to a string
+func (d *deleteRKey) String() string {
+	var rkeys string
+
+	for i := range d.rkeys {
+		rkeys += fmt.Sprintf("RKey %d: %d, ", i, d.rkeys[i])
+	}
 
 	dFmt := "LLC Delete RKey: Type: %d, Length: %d, " +
-		"Reserved: %#x, Reply: %t, Reserved: %t, " +
+		"Reserved: %#x, Reply: %t, Reserved: %#x, " +
 		"Negative Response: %t, Reserved: %#x, " +
-		"Count: %d, Error Mask: %#b, Reserved: %#x, RKey1: %d, " +
-		"RKey2: %d, RKey3: %d, RKey4: %d, RKey5: %d, RKey6: %d, " +
-		"RKey7: %d, RKey8: %d, Reserved: %#x\n"
-	fmt.Printf(dFmt, typ, length, res1, reply, res2, z, res3, count,
-		errorMask, res4, rkey1, rkey2, rkey3, rkey4, rkey5, rkey6,
-		rkey7, rkey8, res5)
+		"Count: %d, Error Mask: %#b, Reserved: %#x, %sReserved: %#x\n"
+	return fmt.Sprintf(dFmt, d.typ, d.length, d.res1, d.reply, d.res2,
+		d.reject, d.res3, d.count, d.errorMask, d.res4, rkeys, d.res5)
+}
+
+// parseDeleteRKey parses the LLC delete RKey message in buffer
+func parseDeleteRKey(buffer []byte) {
+	var del deleteRKey
+	del.parse(buffer)
+	fmt.Println(del)
 }
 
 // parseTestLink parses the LLC test link message in buffer
