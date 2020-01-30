@@ -344,8 +344,8 @@ func (a *addLinkCont) parse(buffer []byte) {
 	// parse
 	// * first RKey/RToken pair
 	// * second RKey/RToken pair (can be all zero)
-	for _, pair := range a.rkeyPairs {
-		pair.parse(buffer)
+	for i := range a.rkeyPairs {
+		a.rkeyPairs[i].parse(buffer)
 		buffer = buffer[16:]
 	}
 
@@ -358,8 +358,8 @@ func (a *addLinkCont) String() string {
 	var pairs string
 
 	// convert RKey pairs
-	for i, pair := range a.rkeyPairs {
-		pairs = fmt.Sprintf("RKey Pair %d: %s, ", i+1, &pair)
+	for i := range a.rkeyPairs {
+		pairs = fmt.Sprintf("RKey Pair %d: %s, ", i+1, &a.rkeyPairs[i])
 	}
 
 	aFmt := "LLC Add Link Continuation: Type: %d, Length: %d, " +
@@ -532,8 +532,8 @@ func (c *confirmRKey) parse(buffer []byte) {
 	// parse
 	// * first other link rmb (can be all zeros)
 	// * second other link rmb (can be all zeros)
-	for _, other := range c.otherRMBs {
-		other.parse(buffer)
+	for i := range c.otherRMBs {
+		c.otherRMBs[i].parse(buffer)
 		buffer = buffer[13:]
 	}
 
@@ -545,8 +545,9 @@ func (c *confirmRKey) parse(buffer []byte) {
 func (c *confirmRKey) String() string {
 	var others string
 
-	for i, other := range c.otherRMBs {
-		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1, &other)
+	for i := range c.otherRMBs {
+		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1,
+			&c.otherRMBs[i])
 	}
 
 	cFmt := "LLC Confirm RKey: Type: %d, Length: %d, Reserved: %#x, " +
@@ -618,8 +619,8 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 	// * first other link rmb (can be all zeros)
 	// * second other link rmb (can be all zeros)
 	// * third other link rmb (can be all zeros)
-	for _, other := range c.otherRMBs {
-		other.parse(buffer)
+	for i := range c.otherRMBs {
+		c.otherRMBs[i].parse(buffer)
 		buffer = buffer[13:]
 	}
 
@@ -631,8 +632,9 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 func (c *confirmRKeyCont) String() string {
 	var others string
 
-	for i, other := range c.otherRMBs {
-		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1, &other)
+	for i := range c.otherRMBs {
+		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1,
+			&c.otherRMBs[i])
 	}
 
 	cFmt := "LLC Confirm RKey Continuation: Type: %d, Length: %d, " +
