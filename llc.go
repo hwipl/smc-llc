@@ -566,75 +566,89 @@ func parseConfirmRKey(buffer []byte) {
 	fmt.Println(confirm)
 }
 
-// parseConfirmRKeyCont parses the LLC confirm RKey Continuation message in
-// buffer
-func parseConfirmRKeyCont(buffer []byte) {
+// confirmRKeyCont stores a LLC confirm rkey continuation message
+type confirmRKeyCont struct {
+	typ       uint8
+	length    uint8
+	res1      byte
+	reply     bool
+	res2      byte
+	reject    bool // negative response
+	res3      byte
+	numTkns   uint8
+	otherRMBs [3]rmbSpec
+	res4      []byte
+}
+
+// parse fills the confirmRKey fields from the confirm RKey continuation
+// message in buffer
+func (c *confirmRKeyCont) parse(buffer []byte) {
 	// TODO: merge with confirmRKey()?
 	// Message type is 1 byte
-	typ := buffer[0]
+	c.typ = buffer[0]
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	length := buffer[0]
+	c.length = buffer[0]
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
-	res1 := buffer[0]
+	c.res1 = buffer[0]
 	buffer = buffer[1:]
 
 	// Reply is first bit in this byte
-	reply := (buffer[0] & 0b10000000) > 0
+	c.reply = (buffer[0] & 0b10000000) > 0
 
 	// Reserved is the next bit in this byte
-	res2 := (buffer[0] & 0b01000000) > 0
+	c.res2 = (buffer[0] & 0b01000000) >> 6
 
 	// Negative response flag is the next bit in this byte
-	z := (buffer[0] & 0b00100000) > 0
+	c.reject = (buffer[0] & 0b00100000) > 0
 
 	// Remainder of this byte is reserved
-	res3 := buffer[0] >> 3
+	c.res3 = buffer[0] >> 3
 	buffer = buffer[1:]
 
 	// Number of tokens left is 1 byte
-	numTkns := buffer[0]
+	c.numTkns = buffer[0]
 	buffer = buffer[1:]
 
-	// other link rmb specifications are 13 bytes and consist of:
-	// * link number (1 byte)
-	// * RMB's RKey for the specified link (4 bytes)
-	// * RMB's virtual address for the specified link (8 bytes)
-	getOther := func() (uint8, uint32, uint64) {
-		link := buffer[0]
-		rkey := binary.BigEndian.Uint32(buffer[1:5])
-		vaddr := binary.BigEndian.Uint64(buffer[5:13])
-		return link, rkey, vaddr
+	// other link rmb specifications are each 13 bytes
+	// parse
+	// * first other link rmb (can be all zeros)
+	// * second other link rmb (can be all zeros)
+	// * third other link rmb (can be all zeros)
+	for _, other := range c.otherRMBs {
+		other.parse(buffer)
+		buffer = buffer[13:]
 	}
 
-	// first other link rmb (can be all zeros)
-	otherLink1, otherRkey1, otherVaddr1 := getOther()
-	buffer = buffer[13:]
-
-	// second other link rmb (can be all zeros)
-	otherLink2, otherRkey2, otherVaddr2 := getOther()
-	buffer = buffer[13:]
-
-	// third other link rmb (can be all zeros)
-	otherLink3, otherRkey3, otherVaddr3 := getOther()
-	buffer = buffer[13:]
-
 	// Rest of message is reserved
-	res4 := buffer[:]
+	c.res4 = buffer[:]
+}
+
+// String converts the confirm RKey continuation message to a string
+func (c *confirmRKeyCont) String() string {
+	var others string
+
+	for i, other := range c.otherRMBs {
+		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1, &other)
+	}
 
 	cFmt := "LLC Confirm RKey Continuation: Type: %d, Length: %d, " +
-		"Reserved: %#x, Reply: %t, Reserved: %t, " +
+		"Reserved: %#x, Reply: %t, Reserved: %#x, " +
 		"Negative Response: %t, Reserved: %#x, " +
-		"Number of Tokens: %d, Other Link1: %d, Other RKey1: %d, " +
-		"Other Vaddr1: %#x, Other Link2: %d, Other RKey2: %d, " +
-		"Other Vaddr2: %#x, Other Link3: %d, Other RKey3: %d, " +
-		"Other Vaddr3: %#x, Reserved: %#x\n"
-	fmt.Printf(cFmt, typ, length, res1, reply, res2, z, res3, numTkns,
-		otherLink1, otherRkey1, otherVaddr1, otherLink2, otherRkey2,
-		otherVaddr2, otherLink3, otherRkey3, otherVaddr3, res4)
+		"Number of Tokens: %d, %sReserved: %#x\n"
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.res1, c.reply, c.res2,
+		c.reject, c.res3, c.numTkns, others, c.res4)
+}
+
+// parseConfirmRKeyCont parses the LLC confirm RKey Continuation message in
+// buffer
+func parseConfirmRKeyCont(buffer []byte) {
+	var confirmCont confirmRKeyCont
+	confirmCont.parse(buffer)
+	fmt.Println(confirmCont)
 }
 
 // parseDeleteRKey parses the LLC delete RKey message in buffer
