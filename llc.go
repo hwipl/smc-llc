@@ -148,11 +148,11 @@ func (m qpMTU) String() string {
 	return fmt.Sprintf("%d (%s)", m, mtu)
 }
 
-// rsnCode stores the reason code of LLC add link messages
-type rsnCode uint8
+// addLinkRsnCode stores the reason code of LLC add link messages
+type addLinkRsnCode uint8
 
 // String converts the reason code to a string
-func (r rsnCode) String() string {
+func (r addLinkRsnCode) String() string {
 	var rsn string
 
 	switch r {
@@ -172,7 +172,7 @@ type addLink struct {
 	typ       uint8
 	length    uint8
 	res1      byte
-	rsnCode   rsnCode
+	rsnCode   addLinkRsnCode
 	reply     bool
 	reject    bool
 	res2      byte
@@ -200,7 +200,7 @@ func (a *addLink) parse(buffer []byte) {
 	a.res1 = buffer[0] >> 4
 
 	// Reason Code are the last 4 bits in this byte
-	a.rsnCode = rsnCode(buffer[0] & 0b00001111)
+	a.rsnCode = addLinkRsnCode(buffer[0] & 0b00001111)
 	buffer = buffer[1:]
 
 	// Reply flag is the first bit in this byte
