@@ -876,67 +876,89 @@ func parsePayload(buffer []byte) {
 	fmt.Println(hex.Dump(buffer))
 }
 
-// parseBTH parses the BTH header in buffer
-func parseBTH(buffer []byte) {
-	// save complete bth for later
-	bth := buffer
+// bth stores an ib base transport header
+type bth struct {
+	opcode uint8
+	se     bool
+	m      bool
+	pad    uint8
+	tver   uint8
+	pkey   uint16
+	fecn   bool
+	becn   bool
+	res1   byte
+	destQP uint32
+	a      bool
+	res2   byte
+	psn    uint32
+}
 
+// parse fills the bth fields from the base transport header in buffer
+func (b *bth) parse(buffer []byte) {
 	// opcode is 1 byte
-	opcode := buffer[0]
+	b.opcode = buffer[0]
 	buffer = buffer[1:]
 
 	// solicited event is first bit in this byte
-	se := (buffer[0] & 0b10000000) > 0
+	b.se = (buffer[0] & 0b10000000) > 0
 
 	// MigReq is the next bit in this byte
-	m := (buffer[0] & 0b01000000) > 0
+	b.m = (buffer[0] & 0b01000000) > 0
 
 	// pad count is the next 2 bits in this byte
-	pad := (buffer[0] & 0b00110000) >> 4
+	b.pad = (buffer[0] & 0b00110000) >> 4
 
 	// transport header version is last 4 bits in this byte
-	tver := buffer[0] & 0b00001111
+	b.tver = buffer[0] & 0b00001111
 	buffer = buffer[1:]
 
 	// partition key is 2 bytes
-	pkey := binary.BigEndian.Uint16(buffer[0:2])
+	b.pkey = binary.BigEndian.Uint16(buffer[0:2])
 	buffer = buffer[2:]
 
 	// FECN is first bit in this byte
-	fecn := (buffer[0] & 0b10000000) > 0
+	b.fecn = (buffer[0] & 0b10000000) > 0
 
 	// BECN is next bit in this byte
-	becn := (buffer[0] & 0b01000000) > 0
+	b.becn = (buffer[0] & 0b01000000) > 0
 
 	// Reserved are the last 6 bits in this byte
-	res1 := buffer[0] & 0b00111111
+	b.res1 = buffer[0] & 0b00111111
 	buffer = buffer[1:]
 
 	// destination QP number is 3 bytes
-	var destQP uint32
-	destQP = uint32(buffer[0]) << 16
-	destQP |= uint32(buffer[1]) << 8
-	destQP |= uint32(buffer[2])
+	b.destQP = uint32(buffer[0]) << 16
+	b.destQP |= uint32(buffer[1]) << 8
+	b.destQP |= uint32(buffer[2])
 	buffer = buffer[3:]
 
-	// AckReq is first bis in this byte
-	a := (buffer[0] & 0b10000000) > 0
+	// AckReq is first bit in this byte
+	b.a = (buffer[0] & 0b10000000) > 0
 
 	// Reserved are the last 7 bits in this byte
-	res2 := buffer[0] & 0b01111111
+	b.res2 = buffer[0] & 0b01111111
 
 	// Packet Sequence Number is 3 bytes
-	var psn uint32
-	psn = uint32(buffer[0]) << 16
-	psn |= uint32(buffer[1]) << 8
-	psn |= uint32(buffer[2])
+	b.psn = uint32(buffer[0]) << 16
+	b.psn |= uint32(buffer[1]) << 8
+	b.psn |= uint32(buffer[2])
+}
 
+// String converts the base transport header to a string
+func (b *bth) String() string {
 	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
 		"A: %t, Res: %#x, PSN: %d\n"
-	fmt.Printf(bfmt, opcode, se, m, pad, tver, pkey, fecn, becn, res1,
-		destQP, a, res2, psn)
-	fmt.Printf("%s", hex.Dump(bth))
+	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
+		b.fecn, b.becn, b.res1, b.destQP, b.a, b.res2, b.psn)
+}
+
+// parseBTH parses the BTH header in buffer
+func parseBTH(buffer []byte) {
+	var b bth
+	b.parse(buffer)
+	fmt.Println(b)
+	fmt.Printf("%s", hex.Dump(buffer))
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
