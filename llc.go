@@ -376,6 +376,37 @@ func parseAddLinkCont(buffer []byte) {
 	fmt.Println(addCont)
 }
 
+// delLinkRsnCode stores the reason code of a delete link message
+type delLinkRsnCode uint32
+
+// String converts the delete link reason code to a string
+func (d delLinkRsnCode) String() string {
+	var rsn string
+
+	switch d {
+	case 0x00010000:
+		rsn = "Lost path"
+
+	case 0x00020000:
+		rsn = "Operator initiated termination"
+
+	case 0x00030000:
+		rsn = "Program initiated termination (link inactivity)"
+
+	case 0x00040000:
+		rsn = "LLC protocol violation"
+
+	case 0x00050000:
+		rsn = "Asymmetric link no longer needed"
+	case 0x00100000:
+		rsn = "Unknown link ID (no link)"
+	default:
+		rsn = "unknown"
+	}
+
+	return fmt.Sprintf("%d (%s)", d, rsn)
+}
+
 // delteLink stores a LLC delete link message
 type deleteLink struct {
 	typ     uint8
@@ -386,7 +417,7 @@ type deleteLink struct {
 	orderly bool
 	res2    byte
 	link    uint8
-	rsnCode uint32
+	rsnCode delLinkRsnCode
 	res3    []byte
 }
 
@@ -422,7 +453,7 @@ func (d *deleteLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Reason Code is 4 bytes
-	d.rsnCode = binary.BigEndian.Uint32(buffer[0:4])
+	d.rsnCode = delLinkRsnCode(binary.BigEndian.Uint32(buffer[0:4]))
 	buffer = buffer[4:]
 
 	// Rest of message is reserved
@@ -433,7 +464,7 @@ func (d *deleteLink) parse(buffer []byte) {
 func (d *deleteLink) String() string {
 	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, All: %t, Orderly: %t, Reserved: %#x, Link: %d, " +
-		"Reason Code: %d, Reserved: %#x\n"
+		"Reason Code: %s, Reserved: %#x\n"
 	return fmt.Sprintf(dFmt, d.typ, d.length, d.res1, d.reply, d.all,
 		d.orderly, d.res2, d.link, d.rsnCode, d.res3)
 }
