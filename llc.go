@@ -119,7 +119,7 @@ func (c *confirmLink) String() string {
 func parseConfirm(buffer []byte) {
 	var confirm confirmLink
 	confirm.parse(buffer)
-	fmt.Println(confirm)
+	fmt.Printf("%s", &confirm)
 }
 
 // qpMTU stores the compressed MTU of a QP, taken from smc-clc
@@ -265,7 +265,7 @@ func (a *addLink) String() string {
 func parseAddLink(buffer []byte) {
 	var add addLink
 	add.parse(buffer)
-	fmt.Println(add)
+	fmt.Printf("%s", &add)
 }
 
 // rkeyPair stores a RKey/RToken pair
@@ -373,7 +373,7 @@ func (a *addLinkCont) String() string {
 func parseAddLinkCont(buffer []byte) {
 	var addCont addLinkCont
 	addCont.parse(buffer)
-	fmt.Println(addCont)
+	fmt.Printf("%s", &addCont)
 }
 
 // delLinkRsnCode stores the reason code of a delete link message
@@ -473,7 +473,7 @@ func (d *deleteLink) String() string {
 func parseDeleteLink(buffer []byte) {
 	var del deleteLink
 	del.parse(buffer)
-	fmt.Println(del)
+	fmt.Printf("%s", &del)
 }
 
 // rmbSpec stores another RMB specificiation
@@ -595,7 +595,7 @@ func (c *confirmRKey) String() string {
 func parseConfirmRKey(buffer []byte) {
 	var confirm confirmRKey
 	confirm.parse(buffer)
-	fmt.Println(confirm)
+	fmt.Printf("%s", &confirm)
 }
 
 // confirmRKeyCont stores a LLC confirm rkey continuation message
@@ -681,7 +681,7 @@ func (c *confirmRKeyCont) String() string {
 func parseConfirmRKeyCont(buffer []byte) {
 	var confirmCont confirmRKeyCont
 	confirmCont.parse(buffer)
-	fmt.Println(confirmCont)
+	fmt.Printf("%s", &confirmCont)
 }
 
 // deleteRKey stores a LLC delete RKey message
@@ -778,7 +778,7 @@ func (d *deleteRKey) String() string {
 func parseDeleteRKey(buffer []byte) {
 	var del deleteRKey
 	del.parse(buffer)
-	fmt.Println(del)
+	fmt.Printf("%s", &del)
 }
 
 // testLink stores a LLC test link message
@@ -833,7 +833,7 @@ func (t *testLink) String() string {
 func parseTestLink(buffer []byte) {
 	var test testLink
 	test.parse(buffer)
-	fmt.Println(test)
+	fmt.Printf("%s", &test)
 }
 
 // cdc stores a CDC message
@@ -958,7 +958,7 @@ func (c *cdc) String() string {
 func parseCDC(buffer []byte) {
 	var c cdc
 	c.parse(buffer)
-	fmt.Println(c)
+	fmt.Printf("%s", &c)
 }
 
 // parseLLC parses the LLC message in buffer
@@ -1082,7 +1082,7 @@ func (b *bth) String() string {
 func parseBTH(buffer []byte) {
 	var b bth
 	b.parse(buffer)
-	fmt.Println(b)
+	fmt.Printf("%s", &b)
 	fmt.Printf("%s", hex.Dump(buffer))
 }
 
