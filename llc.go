@@ -1090,6 +1090,7 @@ func parseBTH(buffer []byte) {
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) {
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
+	fmt.Printf("GRH:\n%s", hex.Dump(buffer[:40]))
 	// verify header?
 	// verify next header is BTH? nextHeader == 0x1B?
 	buffer = buffer[40:]
