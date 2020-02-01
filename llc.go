@@ -1063,6 +1063,7 @@ func (b *bth) parse(buffer []byte) {
 
 	// Reserved are the last 7 bits in this byte
 	b.res2 = buffer[0] & 0b01111111
+	buffer = buffer[1:]
 
 	// Packet Sequence Number is 3 bytes
 	b.psn = uint32(buffer[0]) << 16
