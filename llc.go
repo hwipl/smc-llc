@@ -1088,12 +1088,34 @@ func parseBTH(buffer []byte) {
 	fmt.Printf("%s", hex.Dump(buffer))
 }
 
+// parseGRH parses the global routing header in buffer
+func parseGRH(buffer []byte) {
+	// parse buffer as IPv6 packet
+	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
+		gopacket.Default)
+	ipv6Layer := ipv6Packet.Layer(layers.LayerTypeIPv6)
+	if ipv6Layer != nil {
+		ipv6, _ := ipv6Layer.(*layers.IPv6)
+		// rename nextHeader to "BTH" if it is correct (== 0x1B)
+		nextHeader := "BTH"
+		if ipv6.NextHeader != 0x1B {
+			// otherwise just use what gopacket thinks it is
+			nextHeader = ipv6.NextHeader.String()
+		}
+		iFmt := "GRH: Version: %d, Traffic Class: %d, " +
+			"Flow Label: %d, Length: %d, Next Header: %s, " +
+			"Hop Limit: %d, Source: %s, Destination: %s\n"
+		fmt.Printf(iFmt, ipv6.Version, ipv6.TrafficClass,
+			ipv6.FlowLabel, ipv6.Length, nextHeader,
+			ipv6.HopLimit, ipv6.SrcIP, ipv6.DstIP)
+		fmt.Printf("%s", hex.Dump(buffer[:40]))
+	}
+}
+
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) {
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	fmt.Printf("GRH:\n%s", hex.Dump(buffer[:40]))
-	// verify header?
-	// verify next header is BTH? nextHeader == 0x1B?
+	parseGRH(buffer[:40])
 	buffer = buffer[40:]
 
 	// Base Transport Header (BTH) is 12 bytes
