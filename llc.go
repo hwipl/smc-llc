@@ -36,6 +36,9 @@ const (
 	typeConfirmRKeyCont = 8
 	typeDeleteRKey      = 9
 	typeCDC             = 0xFE
+
+	// roce
+	rocev1EtherType = 0x8915
 )
 
 // confirmLink stores a LLC confirm message
@@ -1155,7 +1158,7 @@ func parse(packet gopacket.Packet) {
 
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
-	if eth.EthernetType == 0x8915 {
+	if eth.EthernetType == rocev1EtherType {
 		lf := packet.LinkLayer().LinkFlow()
 
 		fmt.Printf("%s RoCEv1 %s -> %s:\n",
