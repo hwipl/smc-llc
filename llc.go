@@ -39,6 +39,7 @@ const (
 
 	// roce
 	rocev1EtherType = 0x8915
+	rocev2UDPPort   = 4791
 )
 
 // confirmLink stores a LLC confirm message
@@ -1174,7 +1175,7 @@ func parse(packet gopacket.Packet) {
 		return
 	}
 	udp, _ := udpLayer.(*layers.UDP)
-	if udp.DstPort == 4791 {
+	if udp.DstPort == rocev2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 
 		fmt.Printf("%s RoCEv2 %s -> %s:\n",
