@@ -39,6 +39,7 @@ const (
 
 	// roce
 	rocev1EtherType = 0x8915
+	grhLen          = 40
 	rocev2UDPPort   = 4791
 )
 
@@ -1115,15 +1116,15 @@ func parseGRH(buffer []byte) {
 		fmt.Printf(iFmt, ipv6.Version, ipv6.TrafficClass,
 			ipv6.FlowLabel, ipv6.Length, nextHeader,
 			ipv6.HopLimit, ipv6.SrcIP, ipv6.DstIP)
-		fmt.Printf("%s", hex.Dump(buffer[:40]))
+		fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
 	}
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) {
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	parseGRH(buffer[:40])
-	buffer = buffer[40:]
+	parseGRH(buffer[:grhLen])
+	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
 	parseBTH(buffer[:12])
