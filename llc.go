@@ -42,6 +42,7 @@ const (
 	grhLen          = 40
 	rocev2UDPPort   = 4791
 	bthNextHeader   = 0x1B
+	bthLen          = 12
 )
 
 // confirmLink stores a LLC confirm message
@@ -1128,8 +1129,8 @@ func parseRoCEv1(buffer []byte) {
 	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
-	parseBTH(buffer[:12])
-	payload := buffer[12:]
+	parseBTH(buffer[:bthLen])
+	payload := buffer[bthLen:]
 
 	// invariant CRC (ICRC) is 4 bytes
 	payload = payload[:len(payload)-4]
@@ -1141,8 +1142,8 @@ func parseRoCEv1(buffer []byte) {
 // parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
 func parseRoCEv2(buffer []byte) {
 	// Base Transport Header (BTH) is 12 bytes
-	parseBTH(buffer[:12])
-	payload := buffer[12:]
+	parseBTH(buffer[:bthLen])
+	payload := buffer[bthLen:]
 
 	// invariant CRC (ICRC) is 4 bytes
 	payload = payload[:len(payload)-4]
