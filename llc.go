@@ -41,6 +41,7 @@ const (
 	rocev1EtherType = 0x8915
 	grhLen          = 40
 	rocev2UDPPort   = 4791
+	bthNextHeader   = 0x1B
 )
 
 // confirmLink stores a LLC confirm message
@@ -1106,7 +1107,7 @@ func parseGRH(buffer []byte) {
 		ipv6, _ := ipv6Layer.(*layers.IPv6)
 		// rename nextHeader to "BTH" if it is correct (== 0x1B)
 		nextHeader := "BTH"
-		if ipv6.NextHeader != 0x1B {
+		if ipv6.NextHeader != bthNextHeader {
 			// otherwise just use what gopacket thinks it is
 			nextHeader = ipv6.NextHeader.String()
 		}
