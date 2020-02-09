@@ -23,6 +23,9 @@ var (
 )
 
 const (
+	// llc messages are 44 bytes long
+	llcMsgLen = 44
+
 	// LLC message types
 	typeConfirmLink     = 1
 	typeAddLink         = 2
@@ -991,7 +994,7 @@ func parseLLC(buffer []byte) {
 // parsePayload parses the payload in buffer to extract llc messages
 func parsePayload(buffer []byte) {
 	// llc messages are 44 byte long
-	if len(buffer) == 44 {
+	if len(buffer) == llcMsgLen {
 		parseLLC(buffer)
 		fmt.Println(hex.Dump(buffer))
 		return
