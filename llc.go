@@ -23,6 +23,7 @@ var (
 
 	// display flags
 	showGRH = flag.Bool("with-grh", false, "show GRH")
+	showBTH = flag.Bool("with-bth", false, "show BTH")
 )
 
 const (
@@ -1095,6 +1096,11 @@ func (b *bth) String() string {
 
 // parseBTH parses the BTH header in buffer
 func parseBTH(buffer []byte) {
+	// if we do not want to show the BTH, stop here
+	if !*showBTH {
+		return
+	}
+
 	var b bth
 	b.parse(buffer)
 	fmt.Printf("%s", &b)
