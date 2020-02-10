@@ -24,6 +24,7 @@ var (
 	// display flags
 	showGRH = flag.Bool("with-grh", false, "show GRH")
 	showBTH = flag.Bool("with-bth", false, "show BTH")
+	showHex = flag.Bool("with-hex", false, "show hex dumps")
 )
 
 const (
@@ -1007,13 +1008,17 @@ func parsePayload(buffer []byte) {
 	// llc messages are 44 byte long
 	if len(buffer) == llcMsgLen {
 		parseLLC(buffer)
-		fmt.Println(hex.Dump(buffer))
+		if *showHex {
+			fmt.Println(hex.Dump(buffer))
+		}
 		return
 	}
 
 	// dump payload
 	fmt.Println("Payload:")
-	fmt.Println(hex.Dump(buffer))
+	if *showHex {
+		fmt.Println(hex.Dump(buffer))
+	}
 }
 
 // bth stores an ib base transport header
@@ -1104,7 +1109,9 @@ func parseBTH(buffer []byte) {
 	var b bth
 	b.parse(buffer)
 	fmt.Printf("%s", &b)
-	fmt.Printf("%s", hex.Dump(buffer))
+	if *showHex {
+		fmt.Printf("%s", hex.Dump(buffer))
+	}
 }
 
 // parseGRH parses the global routing header in buffer
@@ -1132,7 +1139,9 @@ func parseGRH(buffer []byte) {
 		fmt.Printf(iFmt, ipv6.Version, ipv6.TrafficClass,
 			ipv6.FlowLabel, ipv6.Length, nextHeader,
 			ipv6.HopLimit, ipv6.SrcIP, ipv6.DstIP)
-		fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
+		if *showHex {
+			fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
+		}
 	}
 }
 
