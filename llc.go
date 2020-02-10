@@ -1014,8 +1014,8 @@ func parsePayload(buffer []byte) {
 		return
 	}
 
-	// dump payload
-	fmt.Println("Payload:")
+	// other payload
+	fmt.Println("Other Payload")
 	if *showHex {
 		fmt.Println(hex.Dump(buffer))
 	}
