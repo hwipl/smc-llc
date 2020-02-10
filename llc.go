@@ -20,6 +20,9 @@ var (
 	pcapDevice  = flag.String("i", "eth0", "the interface to listen on")
 	pcapPromisc = flag.Bool("promisc", true, "promiscuous mode")
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
+
+	// display flags
+	showGRH = flag.Bool("with-grh", false, "show GRH")
 )
 
 const (
@@ -1100,6 +1103,11 @@ func parseBTH(buffer []byte) {
 
 // parseGRH parses the global routing header in buffer
 func parseGRH(buffer []byte) {
+	// if we do not want to show the GRH, stop here
+	if !*showGRH {
+		return
+	}
+
 	// parse buffer as IPv6 packet
 	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
 		gopacket.Default)
