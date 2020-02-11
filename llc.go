@@ -1114,6 +1114,37 @@ func parseBTH(buffer []byte) {
 	}
 }
 
+// grh stores an ib global routing header
+type grh layers.IPv6
+
+// parse fills the grh fields from the global routing header in buffer
+func (g *grh) parse(buffer []byte) {
+	// parse buffer as IPv6 packet
+	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
+		gopacket.Default)
+	ipv6Layer := ipv6Packet.Layer(layers.LayerTypeIPv6)
+	if ipv6Layer != nil {
+		ipv6, _ := ipv6Layer.(*layers.IPv6)
+		*g = grh(*ipv6)
+	}
+
+}
+
+// String converts the global routing header to a string
+func (g *grh) String() string {
+	// rename nextHeader to "BTH" if it is correct (== 0x1B)
+	nextHeader := "BTH"
+	if g.NextHeader != bthNextHeader {
+		// otherwise just use what gopacket thinks it is
+		nextHeader = g.NextHeader.String()
+	}
+	iFmt := "GRH: Version: %d, Traffic Class: %d, " +
+		"Flow Label: %d, Length: %d, Next Header: %s, " +
+		"Hop Limit: %d, Source: %s, Destination: %s\n"
+	return fmt.Sprintf(iFmt, g.Version, g.TrafficClass, g.FlowLabel,
+		g.Length, nextHeader, g.HopLimit, g.SrcIP, g.DstIP)
+}
+
 // parseGRH parses the global routing header in buffer
 func parseGRH(buffer []byte) {
 	// if we do not want to show the GRH, stop here
@@ -1121,27 +1152,11 @@ func parseGRH(buffer []byte) {
 		return
 	}
 
-	// parse buffer as IPv6 packet
-	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
-		gopacket.Default)
-	ipv6Layer := ipv6Packet.Layer(layers.LayerTypeIPv6)
-	if ipv6Layer != nil {
-		ipv6, _ := ipv6Layer.(*layers.IPv6)
-		// rename nextHeader to "BTH" if it is correct (== 0x1B)
-		nextHeader := "BTH"
-		if ipv6.NextHeader != bthNextHeader {
-			// otherwise just use what gopacket thinks it is
-			nextHeader = ipv6.NextHeader.String()
-		}
-		iFmt := "GRH: Version: %d, Traffic Class: %d, " +
-			"Flow Label: %d, Length: %d, Next Header: %s, " +
-			"Hop Limit: %d, Source: %s, Destination: %s\n"
-		fmt.Printf(iFmt, ipv6.Version, ipv6.TrafficClass,
-			ipv6.FlowLabel, ipv6.Length, nextHeader,
-			ipv6.HopLimit, ipv6.SrcIP, ipv6.DstIP)
-		if *showHex {
-			fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
-		}
+	var g grh
+	g.parse(buffer)
+	fmt.Printf("%s", &g)
+	if *showHex {
+		fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
 	}
 }
 
