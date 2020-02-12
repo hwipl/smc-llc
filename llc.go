@@ -1014,6 +1014,29 @@ func parseCDC(buffer []byte) {
 	fmt.Printf("%s", &c)
 }
 
+// other stores an other message
+type other struct {
+	raw []byte
+}
+
+// parse fills the other fields from the other message in buffer
+func (o *other) parse(buffer []byte) {
+	o.raw = make([]byte, len(buffer))
+	copy(o.raw[:], buffer[:])
+}
+
+// String converts the other message into a string
+func (o *other) String() string {
+	return "Other Payload\n"
+}
+
+// parseOther parses the other message in buffer
+func parseOther(buffer []byte) {
+	var o other
+	o.parse(buffer)
+	fmt.Printf("%s", &o)
+}
+
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) {
 	switch buffer[0] {
@@ -1036,7 +1059,7 @@ func parseLLC(buffer []byte) {
 	case typeCDC:
 		parseCDC(buffer)
 	default:
-		fmt.Println("Unknown LLC message")
+		parseOther(buffer)
 	}
 }
 
@@ -1052,7 +1075,7 @@ func parsePayload(buffer []byte) {
 	}
 
 	// other payload
-	fmt.Println("Other Payload")
+	parseOther(buffer)
 	if *showHex {
 		fmt.Println(hex.Dump(buffer))
 	}
