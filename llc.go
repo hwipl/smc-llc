@@ -28,8 +28,9 @@ var (
 )
 
 const (
-	// llc messages are 44 bytes long
+	// llc/cdc messages are 44 bytes long
 	llcMsgLen = 44
+	cdcMsgLen = 44
 
 	// LLC message types
 	typeConfirmLink     = 1
@@ -52,6 +53,7 @@ const (
 
 // confirmLink stores a LLC confirm message
 type confirmLink struct {
+	raw              [llcMsgLen]byte
 	typ              uint8
 	length           uint8
 	res1             byte
@@ -69,6 +71,9 @@ type confirmLink struct {
 // parse fills the confirmLink fields from the LLC confirm link message in
 // buffer
 func (c *confirmLink) parse(buffer []byte) {
+	// save raw message bytes
+	copy(c.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	c.typ = buffer[0]
 	buffer = buffer[1:]
@@ -185,6 +190,7 @@ func (r addLinkRsnCode) String() string {
 
 // addLink stores a LLC add link message
 type addLink struct {
+	raw       [llcMsgLen]byte
 	typ       uint8
 	length    uint8
 	res1      byte
@@ -204,6 +210,9 @@ type addLink struct {
 
 // parse fills the addLink fields from the LLC add link message in buffer
 func (a *addLink) parse(buffer []byte) {
+	// save raw message bytes
+	copy(a.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	a.typ = buffer[0]
 	buffer = buffer[1:]
@@ -310,6 +319,7 @@ func (r *rkeyPair) String() string {
 
 // addLinkCont stores a LLC add link continuation message
 type addLinkCont struct {
+	raw        [llcMsgLen]byte
 	typ        uint8
 	length     uint8
 	res1       byte
@@ -325,6 +335,9 @@ type addLinkCont struct {
 // parse fills the addLinkCont fields from the LLC add link continuation
 // message in buffer
 func (a *addLinkCont) parse(buffer []byte) {
+	// save raw message bytes
+	copy(a.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	a.typ = buffer[0]
 	buffer = buffer[1:]
@@ -425,6 +438,7 @@ func (d delLinkRsnCode) String() string {
 
 // delteLink stores a LLC delete link message
 type deleteLink struct {
+	raw     [llcMsgLen]byte
 	typ     uint8
 	length  uint8
 	res1    byte
@@ -439,6 +453,9 @@ type deleteLink struct {
 
 // parse fills the deleteLink fields from the LLC delete link message in buffer
 func (d *deleteLink) parse(buffer []byte) {
+	// save raw message bytes
+	copy(d.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	d.typ = buffer[0]
 	buffer = buffer[1:]
@@ -518,6 +535,7 @@ func (r *rmbSpec) String() string {
 
 // confirmRKey stores a LLC confirm RKey message
 type confirmRKey struct {
+	raw       [llcMsgLen]byte
 	typ       uint8
 	length    uint8
 	res1      byte
@@ -535,6 +553,9 @@ type confirmRKey struct {
 
 // parse fills the confirmRKey fields from the confirm RKey message in buffer
 func (c *confirmRKey) parse(buffer []byte) {
+	// save raw message bytes
+	copy(c.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	c.typ = buffer[0]
 	buffer = buffer[1:]
@@ -616,6 +637,7 @@ func parseConfirmRKey(buffer []byte) {
 
 // confirmRKeyCont stores a LLC confirm rkey continuation message
 type confirmRKeyCont struct {
+	raw       [llcMsgLen]byte
 	typ       uint8
 	length    uint8
 	res1      byte
@@ -632,6 +654,9 @@ type confirmRKeyCont struct {
 // message in buffer
 func (c *confirmRKeyCont) parse(buffer []byte) {
 	// TODO: merge with confirmRKey()?
+	// save raw message bytes
+	copy(c.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	c.typ = buffer[0]
 	buffer = buffer[1:]
@@ -702,6 +727,7 @@ func parseConfirmRKeyCont(buffer []byte) {
 
 // deleteRKey stores a LLC delete RKey message
 type deleteRKey struct {
+	raw       [llcMsgLen]byte
 	typ       uint8
 	length    uint8
 	res1      byte
@@ -718,6 +744,9 @@ type deleteRKey struct {
 
 // parse fills the deleteRKey fields from the delete RKey message in buffer
 func (d *deleteRKey) parse(buffer []byte) {
+	// save raw message bytes
+	copy(d.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	d.typ = buffer[0]
 	buffer = buffer[1:]
@@ -799,6 +828,7 @@ func parseDeleteRKey(buffer []byte) {
 
 // testLink stores a LLC test link message
 type testLink struct {
+	raw      [llcMsgLen]byte
 	typ      uint8
 	length   uint8
 	res1     byte
@@ -810,6 +840,9 @@ type testLink struct {
 
 // parse fills the testLink fields from the test link message in buffer
 func (t *testLink) parse(buffer []byte) {
+	// save raw message bytes
+	copy(t.raw[:], buffer[:llcMsgLen])
+
 	// Message type is 1 byte
 	t.typ = buffer[0]
 	buffer = buffer[1:]
@@ -854,6 +887,7 @@ func parseTestLink(buffer []byte) {
 
 // cdc stores a CDC message
 type cdc struct {
+	raw      [cdcMsgLen]byte
 	typ      uint8
 	length   uint8
 	seqNum   uint16
@@ -878,6 +912,9 @@ type cdc struct {
 
 // parse fills the cdc fields from the CDC message in buffer
 func (c *cdc) parse(buffer []byte) {
+	// save raw message bytes
+	copy(c.raw[:], buffer[:cdcMsgLen])
+
 	// Message type is 1 byte
 	c.typ = buffer[0]
 	buffer = buffer[1:]
@@ -1023,6 +1060,7 @@ func parsePayload(buffer []byte) {
 
 // bth stores an ib base transport header
 type bth struct {
+	raw    [bthLen]byte
 	opcode uint8
 	se     bool
 	m      bool
@@ -1040,6 +1078,9 @@ type bth struct {
 
 // parse fills the bth fields from the base transport header in buffer
 func (b *bth) parse(buffer []byte) {
+	// save raw message bytes
+	copy(b.raw[:], buffer[:bthLen])
+
 	// opcode is 1 byte
 	b.opcode = buffer[0]
 	buffer = buffer[1:]
