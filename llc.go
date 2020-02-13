@@ -171,10 +171,10 @@ func (c *confirmLink) String() string {
 }
 
 // parseConfirm parses and prints the LLC confirm link message in buffer
-func parseConfirm(buffer []byte) {
+func parseConfirm(buffer []byte) *confirmLink {
 	var confirm confirmLink
 	confirm.parse(buffer)
-	fmt.Printf("%s", &confirm)
+	return &confirm
 }
 
 // qpMTU stores the compressed MTU of a QP, taken from smc-clc
@@ -319,10 +319,10 @@ func (a *addLink) String() string {
 }
 
 // parseAddLink parses and prints the LLC add link message in buffer
-func parseAddLink(buffer []byte) {
+func parseAddLink(buffer []byte) *addLink {
 	var add addLink
 	add.parse(buffer)
-	fmt.Printf("%s", &add)
+	return &add
 }
 
 // rkeyPair stores a RKey/RToken pair
@@ -429,10 +429,10 @@ func (a *addLinkCont) String() string {
 }
 
 // parseAddLinkCont parses the LLC add link continuation message in buffer
-func parseAddLinkCont(buffer []byte) {
+func parseAddLinkCont(buffer []byte) *addLinkCont {
 	var addCont addLinkCont
 	addCont.parse(buffer)
-	fmt.Printf("%s", &addCont)
+	return &addCont
 }
 
 // delLinkRsnCode stores the reason code of a delete link message
@@ -531,10 +531,10 @@ func (d *deleteLink) String() string {
 }
 
 // parseDeleteLink parses the LLC delete link message in buffer
-func parseDeleteLink(buffer []byte) {
+func parseDeleteLink(buffer []byte) *deleteLink {
 	var del deleteLink
 	del.parse(buffer)
-	fmt.Printf("%s", &del)
+	return &del
 }
 
 // rmbSpec stores another RMB specificiation
@@ -655,10 +655,10 @@ func (c *confirmRKey) String() string {
 }
 
 // parseConfirmRKey parses the LLC confirm RKey message in buffer
-func parseConfirmRKey(buffer []byte) {
+func parseConfirmRKey(buffer []byte) *confirmRKey {
 	var confirm confirmRKey
 	confirm.parse(buffer)
-	fmt.Printf("%s", &confirm)
+	return &confirm
 }
 
 // confirmRKeyCont stores a LLC confirm rkey continuation message
@@ -743,10 +743,10 @@ func (c *confirmRKeyCont) String() string {
 
 // parseConfirmRKeyCont parses the LLC confirm RKey Continuation message in
 // buffer
-func parseConfirmRKeyCont(buffer []byte) {
+func parseConfirmRKeyCont(buffer []byte) *confirmRKeyCont {
 	var confirmCont confirmRKeyCont
 	confirmCont.parse(buffer)
-	fmt.Printf("%s", &confirmCont)
+	return &confirmCont
 }
 
 // deleteRKey stores a LLC delete RKey message
@@ -842,10 +842,10 @@ func (d *deleteRKey) String() string {
 }
 
 // parseDeleteRKey parses the LLC delete RKey message in buffer
-func parseDeleteRKey(buffer []byte) {
+func parseDeleteRKey(buffer []byte) *deleteRKey {
 	var del deleteRKey
 	del.parse(buffer)
-	fmt.Printf("%s", &del)
+	return &del
 }
 
 // testLink stores a LLC test link message
@@ -899,10 +899,10 @@ func (t *testLink) String() string {
 }
 
 // parseTestLink parses the LLC test link message in buffer
-func parseTestLink(buffer []byte) {
+func parseTestLink(buffer []byte) *testLink {
 	var test testLink
 	test.parse(buffer)
-	fmt.Printf("%s", &test)
+	return &test
 }
 
 // cdc stores a CDC message
@@ -1026,10 +1026,10 @@ func (c *cdc) String() string {
 }
 
 // parseCDC parses the CDC message in buffer
-func parseCDC(buffer []byte) {
+func parseCDC(buffer []byte) *cdc {
 	var c cdc
 	c.parse(buffer)
-	fmt.Printf("%s", &c)
+	return &c
 }
 
 // other stores an other message
@@ -1050,54 +1050,47 @@ func (o *other) String() string {
 }
 
 // parseOther parses the other message in buffer
-func parseOther(buffer []byte) {
+func parseOther(buffer []byte) *other {
 	var o other
 	o.parse(buffer)
-	fmt.Printf("%s", &o)
+	return &o
 }
 
 // parseLLC parses the LLC message in buffer
-func parseLLC(buffer []byte) {
+func parseLLC(buffer []byte) message {
 	switch buffer[0] {
 	case typeConfirmLink:
-		parseConfirm(buffer)
+		return parseConfirm(buffer)
 	case typeAddLink:
-		parseAddLink(buffer)
+		return parseAddLink(buffer)
 	case typeAddLinkCont:
-		parseAddLinkCont(buffer)
+		return parseAddLinkCont(buffer)
 	case typeDeleteLink:
-		parseDeleteLink(buffer)
+		return parseDeleteLink(buffer)
 	case typeConfirmRKey:
-		parseConfirmRKey(buffer)
+		return parseConfirmRKey(buffer)
 	case typeConfirmRKeyCont:
-		parseConfirmRKeyCont(buffer)
+		return parseConfirmRKeyCont(buffer)
 	case typeDeleteRKey:
-		parseDeleteRKey(buffer)
+		return parseDeleteRKey(buffer)
 	case typeTestLink:
-		parseTestLink(buffer)
+		return parseTestLink(buffer)
 	case typeCDC:
-		parseCDC(buffer)
+		return parseCDC(buffer)
 	default:
-		parseOther(buffer)
+		return parseOther(buffer)
 	}
 }
 
 // parsePayload parses the payload in buffer to extract llc messages
-func parsePayload(buffer []byte) {
+func parsePayload(buffer []byte) message {
 	// llc messages are 44 byte long
 	if len(buffer) == llcMsgLen {
-		parseLLC(buffer)
-		if *showHex {
-			fmt.Println(hex.Dump(buffer))
-		}
-		return
+		return parseLLC(buffer)
 	}
 
 	// other payload
-	parseOther(buffer)
-	if *showHex {
-		fmt.Println(hex.Dump(buffer))
-	}
+	return parseOther(buffer)
 }
 
 // bth stores an ib base transport header
@@ -1185,18 +1178,10 @@ func (b *bth) String() string {
 }
 
 // parseBTH parses the BTH header in buffer
-func parseBTH(buffer []byte) {
-	// if we do not want to show the BTH, stop here
-	if !*showBTH {
-		return
-	}
-
+func parseBTH(buffer []byte) *bth {
 	var b bth
 	b.parse(buffer)
-	fmt.Printf("%s", &b)
-	if *showHex {
-		fmt.Printf("%s", hex.Dump(buffer))
-	}
+	return &b
 }
 
 // grh stores an ib global routing header
@@ -1231,18 +1216,10 @@ func (g *grh) String() string {
 }
 
 // parseGRH parses the global routing header in buffer
-func parseGRH(buffer []byte) {
-	// if we do not want to show the GRH, stop here
-	if !*showGRH {
-		return
-	}
-
+func parseGRH(buffer []byte) *grh {
 	var g grh
 	g.parse(buffer)
-	fmt.Printf("%s", &g)
-	if *showHex {
-		fmt.Printf("%s", hex.Dump(buffer[:grhLen]))
-	}
+	return &g
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
