@@ -54,7 +54,7 @@ const (
 // baseMsg stores common message fields
 type baseMsg struct {
 	raw    []byte
-	typ    uint8
+	typ    int
 	length uint8
 }
 
@@ -91,7 +91,7 @@ func (c *confirmLink) parse(buffer []byte) {
 	c.setRaw(buffer)
 
 	// Message type is 1 byte
-	c.typ = buffer[0]
+	c.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -228,7 +228,7 @@ func (a *addLink) parse(buffer []byte) {
 	a.setRaw(buffer)
 
 	// Message type is 1 byte
-	a.typ = buffer[0]
+	a.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -351,7 +351,7 @@ func (a *addLinkCont) parse(buffer []byte) {
 	a.setRaw(buffer)
 
 	// Message type is 1 byte
-	a.typ = buffer[0]
+	a.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -467,7 +467,7 @@ func (d *deleteLink) parse(buffer []byte) {
 	d.setRaw(buffer)
 
 	// Message type is 1 byte
-	d.typ = buffer[0]
+	d.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -565,7 +565,7 @@ func (c *confirmRKey) parse(buffer []byte) {
 	c.setRaw(buffer)
 
 	// Message type is 1 byte
-	c.typ = buffer[0]
+	c.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -664,7 +664,7 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 	c.setRaw(buffer)
 
 	// Message type is 1 byte
-	c.typ = buffer[0]
+	c.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -752,7 +752,7 @@ func (d *deleteRKey) parse(buffer []byte) {
 	d.setRaw(buffer)
 
 	// Message type is 1 byte
-	d.typ = buffer[0]
+	d.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -846,7 +846,7 @@ func (t *testLink) parse(buffer []byte) {
 	t.setRaw(buffer)
 
 	// Message type is 1 byte
-	t.typ = buffer[0]
+	t.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
@@ -916,7 +916,7 @@ func (c *cdc) parse(buffer []byte) {
 	c.setRaw(buffer)
 
 	// Message type is 1 byte
-	c.typ = buffer[0]
+	c.typ = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
