@@ -1232,34 +1232,65 @@ func parseGRH(buffer []byte) *grh {
 	return &g
 }
 
+// output prints the message consisting of parts
+func output(parts []message) {
+	for _, p := range parts {
+		if p.getType() == typeGRH && !*showGRH {
+			continue
+		}
+		if p.getType() == typeBTH && !*showBTH {
+			continue
+		}
+		fmt.Printf("%s", p)
+		if *showHex {
+			fmt.Printf("%s", p.hex())
+		}
+	}
+}
+
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) {
+	var parts []message
+
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	parseGRH(buffer[:grhLen])
+	grh := parseGRH(buffer[:grhLen])
+	parts = append(parts, grh)
 	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
-	parseBTH(buffer[:bthLen])
+	bth := parseBTH(buffer[:bthLen])
+	parts = append(parts, bth)
 	payload := buffer[bthLen:]
 
 	// invariant CRC (ICRC) is 4 bytes
 	payload = payload[:len(payload)-4]
 
 	// parse payload
-	parsePayload(payload)
+	llc := parsePayload(payload)
+	parts = append(parts, llc)
+
+	// output message
+	output(parts)
 }
 
 // parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
 func parseRoCEv2(buffer []byte) {
+	var parts []message
+
 	// Base Transport Header (BTH) is 12 bytes
-	parseBTH(buffer[:bthLen])
+	bth := parseBTH(buffer[:bthLen])
+	parts = append(parts, bth)
 	payload := buffer[bthLen:]
 
 	// invariant CRC (ICRC) is 4 bytes
 	payload = payload[:len(payload)-4]
 
 	// parse payload
-	parsePayload(payload)
+	llc := parsePayload(payload)
+	parts = append(parts, llc)
+
+	// output message
+	output(parts)
 }
 
 // parse determines if packet is a RoCEv1 or RoCEv2 packet
