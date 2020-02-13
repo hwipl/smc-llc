@@ -1215,6 +1215,16 @@ func (g *grh) String() string {
 		g.Length, nextHeader, g.HopLimit, g.SrcIP, g.DstIP)
 }
 
+// hex returns a hex dump string of the message
+func (g *grh) hex() string {
+	return hex.Dump(g.Contents)
+}
+
+// getType returns the type of the message
+func (g *grh) getType() int {
+	return typeGRH
+}
+
 // parseGRH parses the global routing header in buffer
 func parseGRH(buffer []byte) *grh {
 	var g grh
