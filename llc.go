@@ -51,11 +51,27 @@ const (
 	bthLen          = 12
 )
 
+// baseMsg stores common message fields
+type baseMsg struct {
+	raw    []byte
+	typ    uint8
+	length uint8
+}
+
+// setRaw stores raw message bytes in the message
+func (b *baseMsg) setRaw(buffer []byte) {
+	b.raw = make([]byte, len(buffer))
+	copy(b.raw[:], buffer[:])
+}
+
+// hex converts the message to a hex dump string
+func (b *baseMsg) hex() string {
+	return hex.Dump(b.raw)
+}
+
 // confirmLink stores a LLC confirm message
 type confirmLink struct {
-	raw              [llcMsgLen]byte
-	typ              uint8
-	length           uint8
+	baseMsg
 	res1             byte
 	reply            bool
 	res2             byte
@@ -72,7 +88,7 @@ type confirmLink struct {
 // buffer
 func (c *confirmLink) parse(buffer []byte) {
 	// save raw message bytes
-	copy(c.raw[:], buffer[:llcMsgLen])
+	c.setRaw(buffer)
 
 	// Message type is 1 byte
 	c.typ = buffer[0]
@@ -190,9 +206,7 @@ func (r addLinkRsnCode) String() string {
 
 // addLink stores a LLC add link message
 type addLink struct {
-	raw       [llcMsgLen]byte
-	typ       uint8
-	length    uint8
+	baseMsg
 	res1      byte
 	rsnCode   addLinkRsnCode
 	reply     bool
@@ -211,7 +225,7 @@ type addLink struct {
 // parse fills the addLink fields from the LLC add link message in buffer
 func (a *addLink) parse(buffer []byte) {
 	// save raw message bytes
-	copy(a.raw[:], buffer[:llcMsgLen])
+	a.setRaw(buffer)
 
 	// Message type is 1 byte
 	a.typ = buffer[0]
@@ -319,9 +333,7 @@ func (r *rkeyPair) String() string {
 
 // addLinkCont stores a LLC add link continuation message
 type addLinkCont struct {
-	raw        [llcMsgLen]byte
-	typ        uint8
-	length     uint8
+	baseMsg
 	res1       byte
 	reply      bool
 	res2       byte
@@ -336,7 +348,7 @@ type addLinkCont struct {
 // message in buffer
 func (a *addLinkCont) parse(buffer []byte) {
 	// save raw message bytes
-	copy(a.raw[:], buffer[:llcMsgLen])
+	a.setRaw(buffer)
 
 	// Message type is 1 byte
 	a.typ = buffer[0]
@@ -438,9 +450,7 @@ func (d delLinkRsnCode) String() string {
 
 // delteLink stores a LLC delete link message
 type deleteLink struct {
-	raw     [llcMsgLen]byte
-	typ     uint8
-	length  uint8
+	baseMsg
 	res1    byte
 	reply   bool
 	all     bool
@@ -454,7 +464,7 @@ type deleteLink struct {
 // parse fills the deleteLink fields from the LLC delete link message in buffer
 func (d *deleteLink) parse(buffer []byte) {
 	// save raw message bytes
-	copy(d.raw[:], buffer[:llcMsgLen])
+	d.setRaw(buffer)
 
 	// Message type is 1 byte
 	d.typ = buffer[0]
@@ -535,9 +545,7 @@ func (r *rmbSpec) String() string {
 
 // confirmRKey stores a LLC confirm RKey message
 type confirmRKey struct {
-	raw       [llcMsgLen]byte
-	typ       uint8
-	length    uint8
+	baseMsg
 	res1      byte
 	reply     bool
 	res2      byte
@@ -554,7 +562,7 @@ type confirmRKey struct {
 // parse fills the confirmRKey fields from the confirm RKey message in buffer
 func (c *confirmRKey) parse(buffer []byte) {
 	// save raw message bytes
-	copy(c.raw[:], buffer[:llcMsgLen])
+	c.setRaw(buffer)
 
 	// Message type is 1 byte
 	c.typ = buffer[0]
@@ -637,9 +645,7 @@ func parseConfirmRKey(buffer []byte) {
 
 // confirmRKeyCont stores a LLC confirm rkey continuation message
 type confirmRKeyCont struct {
-	raw       [llcMsgLen]byte
-	typ       uint8
-	length    uint8
+	baseMsg
 	res1      byte
 	reply     bool
 	res2      byte
@@ -655,7 +661,7 @@ type confirmRKeyCont struct {
 func (c *confirmRKeyCont) parse(buffer []byte) {
 	// TODO: merge with confirmRKey()?
 	// save raw message bytes
-	copy(c.raw[:], buffer[:llcMsgLen])
+	c.setRaw(buffer)
 
 	// Message type is 1 byte
 	c.typ = buffer[0]
@@ -727,9 +733,7 @@ func parseConfirmRKeyCont(buffer []byte) {
 
 // deleteRKey stores a LLC delete RKey message
 type deleteRKey struct {
-	raw       [llcMsgLen]byte
-	typ       uint8
-	length    uint8
+	baseMsg
 	res1      byte
 	reply     bool
 	res2      byte
@@ -745,7 +749,7 @@ type deleteRKey struct {
 // parse fills the deleteRKey fields from the delete RKey message in buffer
 func (d *deleteRKey) parse(buffer []byte) {
 	// save raw message bytes
-	copy(d.raw[:], buffer[:llcMsgLen])
+	d.setRaw(buffer)
 
 	// Message type is 1 byte
 	d.typ = buffer[0]
@@ -828,9 +832,7 @@ func parseDeleteRKey(buffer []byte) {
 
 // testLink stores a LLC test link message
 type testLink struct {
-	raw      [llcMsgLen]byte
-	typ      uint8
-	length   uint8
+	baseMsg
 	res1     byte
 	reply    bool
 	res2     byte
@@ -841,7 +843,7 @@ type testLink struct {
 // parse fills the testLink fields from the test link message in buffer
 func (t *testLink) parse(buffer []byte) {
 	// save raw message bytes
-	copy(t.raw[:], buffer[:llcMsgLen])
+	t.setRaw(buffer)
 
 	// Message type is 1 byte
 	t.typ = buffer[0]
@@ -887,9 +889,7 @@ func parseTestLink(buffer []byte) {
 
 // cdc stores a CDC message
 type cdc struct {
-	raw      [cdcMsgLen]byte
-	typ      uint8
-	length   uint8
+	baseMsg
 	seqNum   uint16
 	alertTkn uint32
 	res1     [2]byte
@@ -913,7 +913,7 @@ type cdc struct {
 // parse fills the cdc fields from the CDC message in buffer
 func (c *cdc) parse(buffer []byte) {
 	// save raw message bytes
-	copy(c.raw[:], buffer[:cdcMsgLen])
+	c.setRaw(buffer)
 
 	// Message type is 1 byte
 	c.typ = buffer[0]
@@ -1016,13 +1016,14 @@ func parseCDC(buffer []byte) {
 
 // other stores an other message
 type other struct {
-	raw []byte
+	baseMsg
 }
 
 // parse fills the other fields from the other message in buffer
 func (o *other) parse(buffer []byte) {
-	o.raw = make([]byte, len(buffer))
-	copy(o.raw[:], buffer[:])
+	o.setRaw(buffer)
+	o.typ = 0
+	o.length = uint8(len(buffer))
 }
 
 // String converts the other message into a string
@@ -1083,7 +1084,7 @@ func parsePayload(buffer []byte) {
 
 // bth stores an ib base transport header
 type bth struct {
-	raw    [bthLen]byte
+	baseMsg
 	opcode uint8
 	se     bool
 	m      bool
@@ -1102,7 +1103,7 @@ type bth struct {
 // parse fills the bth fields from the base transport header in buffer
 func (b *bth) parse(buffer []byte) {
 	// save raw message bytes
-	copy(b.raw[:], buffer[:bthLen])
+	b.setRaw(buffer)
 
 	// opcode is 1 byte
 	b.opcode = buffer[0]
