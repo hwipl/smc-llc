@@ -56,6 +56,14 @@ const (
 	bthLen          = 12
 )
 
+// message is an interface for messages
+type message interface {
+	parse(buffer []byte)
+	String() string
+	hex() string
+	getType() int
+}
+
 // baseMsg stores common message fields
 type baseMsg struct {
 	raw    []byte
