@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -1233,7 +1234,11 @@ func parseGRH(buffer []byte) *grh {
 }
 
 // output prints the message consisting of parts
-func output(parts []message) {
+func output(roceType string, timestamp time.Time, srcMAC gopacket.Endpoint,
+	dstMAC gopacket.Endpoint, srcIP gopacket.Endpoint,
+	dstIP gopacket.Endpoint, parts []message) {
+	// construct output string
+	var out string = ""
 	for _, p := range parts {
 		if p.getType() == typeGRH && !*showGRH {
 			continue
@@ -1241,20 +1246,30 @@ func output(parts []message) {
 		if p.getType() == typeBTH && !*showBTH {
 			continue
 		}
-		fmt.Printf("%s", p)
+		out += p.String()
 		if *showHex {
-			fmt.Printf("%s", p.hex())
+			out += p.hex()
 		}
+	}
+
+	// if there is output, add header and actually print it
+	if out != "" {
+		fmt.Printf("%s %s %s -> %s (%s -> %s):\n%s",
+			timestamp.Format("15:04:05.000000"), roceType, srcIP,
+			dstIP, srcMAC, dstMAC, out)
 	}
 }
 
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
-func parseRoCEv1(buffer []byte) {
+func parseRoCEv1(timestamp time.Time, srcMAC gopacket.Endpoint,
+	dstMAC gopacket.Endpoint, buffer []byte) {
 	var parts []message
 
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
 	grh := parseGRH(buffer[:grhLen])
 	parts = append(parts, grh)
+	srcIP := layers.NewIPEndpoint(grh.SrcIP)
+	dstIP := layers.NewIPEndpoint(grh.DstIP)
 	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
@@ -1270,11 +1285,13 @@ func parseRoCEv1(buffer []byte) {
 	parts = append(parts, llc)
 
 	// output message
-	output(parts)
+	output("RoCEv1", timestamp, srcMAC, dstMAC, srcIP, dstIP, parts)
 }
 
 // parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
-func parseRoCEv2(buffer []byte) {
+func parseRoCEv2(timestamp time.Time, srcMAC gopacket.Endpoint,
+	dstMAC gopacket.Endpoint, srcIP gopacket.Endpoint,
+	dstIP gopacket.Endpoint, buffer []byte) {
 	var parts []message
 
 	// Base Transport Header (BTH) is 12 bytes
@@ -1290,7 +1307,7 @@ func parseRoCEv2(buffer []byte) {
 	parts = append(parts, llc)
 
 	// output message
-	output(parts)
+	output("RoCEv2", timestamp, srcMAC, dstMAC, srcIP, dstIP, parts)
 }
 
 // parse determines if packet is a RoCEv1 or RoCEv2 packet
@@ -1303,13 +1320,10 @@ func parse(packet gopacket.Packet) {
 
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
+	lf := packet.LinkLayer().LinkFlow()
 	if eth.EthernetType == rocev1EtherType {
-		lf := packet.LinkLayer().LinkFlow()
-
-		fmt.Printf("%s RoCEv1 %s -> %s:\n",
-			packet.Metadata().Timestamp.Format("15:04:05.000000"),
-			lf.Src(), lf.Dst())
-		parseRoCEv1(eth.Payload)
+		timestamp := packet.Metadata().Timestamp
+		parseRoCEv1(timestamp, lf.Src(), lf.Dst(), eth.Payload)
 		return
 	}
 
@@ -1321,11 +1335,9 @@ func parse(packet gopacket.Packet) {
 	udp, _ := udpLayer.(*layers.UDP)
 	if udp.DstPort == rocev2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
-
-		fmt.Printf("%s RoCEv2 %s -> %s:\n",
-			packet.Metadata().Timestamp.Format("15:04:05.000000"),
-			nf.Src(), nf.Dst())
-		parseRoCEv2(udp.Payload)
+		timestamp := packet.Metadata().Timestamp
+		parseRoCEv2(timestamp, lf.Src(), lf.Dst(), nf.Src(), nf.Dst(),
+			udp.Payload)
 		return
 	}
 }
