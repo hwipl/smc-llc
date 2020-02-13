@@ -55,7 +55,7 @@ const (
 type baseMsg struct {
 	raw    []byte
 	typ    int
-	length uint8
+	length int
 }
 
 // setRaw stores raw message bytes in the message
@@ -95,7 +95,7 @@ func (c *confirmLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	c.length = buffer[0]
+	c.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -232,7 +232,7 @@ func (a *addLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	a.length = buffer[0]
+	a.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved are first 4 bits in this byte
@@ -355,7 +355,7 @@ func (a *addLinkCont) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	a.length = buffer[0]
+	a.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -471,7 +471,7 @@ func (d *deleteLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	d.length = buffer[0]
+	d.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -569,7 +569,7 @@ func (c *confirmRKey) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	c.length = buffer[0]
+	c.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -668,7 +668,7 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	c.length = buffer[0]
+	c.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -756,7 +756,7 @@ func (d *deleteRKey) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	d.length = buffer[0]
+	d.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -850,7 +850,7 @@ func (t *testLink) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	t.length = buffer[0]
+	t.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Reserved 1 byte
@@ -920,7 +920,7 @@ func (c *cdc) parse(buffer []byte) {
 	buffer = buffer[1:]
 
 	// Message length is 1 byte, should be equal to 44
-	c.length = buffer[0]
+	c.length = int(buffer[0])
 	buffer = buffer[1:]
 
 	// Sequence number is 2 bytes
@@ -1023,7 +1023,7 @@ type other struct {
 func (o *other) parse(buffer []byte) {
 	o.setRaw(buffer)
 	o.typ = 0
-	o.length = uint8(len(buffer))
+	o.length = len(buffer)
 }
 
 // String converts the other message into a string
