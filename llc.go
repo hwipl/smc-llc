@@ -43,6 +43,11 @@ const (
 	typeDeleteRKey      = 9
 	typeCDC             = 0xFE
 
+	// internal message types for other/non-LLC messages
+	typeOther = 0x101
+	typeGRH   = 0x102
+	typeBTH   = 0x103
+
 	// roce
 	rocev1EtherType = 0x8915
 	grhLen          = 40
@@ -67,6 +72,11 @@ func (b *baseMsg) setRaw(buffer []byte) {
 // hex converts the message to a hex dump string
 func (b *baseMsg) hex() string {
 	return hex.Dump(b.raw)
+}
+
+// getType returns the type of the message
+func (b *baseMsg) getType() int {
+	return b.typ
 }
 
 // confirmLink stores a LLC confirm message
@@ -1022,7 +1032,7 @@ type other struct {
 // parse fills the other fields from the other message in buffer
 func (o *other) parse(buffer []byte) {
 	o.setRaw(buffer)
-	o.typ = 0
+	o.typ = typeOther
 	o.length = len(buffer)
 }
 
@@ -1102,8 +1112,10 @@ type bth struct {
 
 // parse fills the bth fields from the base transport header in buffer
 func (b *bth) parse(buffer []byte) {
-	// save raw message bytes
+	// save raw message bytes, set internal type and length
 	b.setRaw(buffer)
+	b.typ = typeBTH
+	b.length = bthLen
 
 	// opcode is 1 byte
 	b.opcode = buffer[0]
