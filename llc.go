@@ -23,10 +23,12 @@ var (
 	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
 
 	// display flags
-	showGRH   = flag.Bool("with-grh", false, "show GRH")
-	showBTH   = flag.Bool("with-bth", false, "show BTH")
-	showHex   = flag.Bool("with-hex", false, "show hex dumps")
-	showOther = flag.Bool("with-other", false, "show other messages")
+	showGRH      = flag.Bool("with-grh", false, "show GRH")
+	showBTH      = flag.Bool("with-bth", false, "show BTH")
+	showHex      = flag.Bool("with-hex", false, "show hex dumps")
+	showOther    = flag.Bool("with-other", false, "show other messages")
+	showReserved = flag.Bool("with-reserved", false,
+		"show reserved message fields")
 )
 
 const (
@@ -1389,7 +1391,11 @@ func output(roceType string, timestamp time.Time, srcMAC gopacket.Endpoint,
 		if p.getType() == typeOther && !*showOther {
 			continue
 		}
-		out += p.String()
+		if *showReserved {
+			out += p.reserved()
+		} else {
+			out += p.String()
+		}
 		if *showHex {
 			out += p.hex()
 		}
