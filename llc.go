@@ -62,6 +62,7 @@ const (
 type message interface {
 	parse(buffer []byte)
 	String() string
+	reserved() string
 	hex() string
 	getType() int
 }
@@ -163,6 +164,17 @@ func (c *confirmLink) parse(buffer []byte) {
 
 // String converts the LLC confirm link message to string
 func (c *confirmLink) String() string {
+	cFmt := "LLC Confirm: Type: %d, Length: %d, Reply: %t, " +
+		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
+		"Sender Link UserID: %d, Max Links: %d\n"
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.reply, c.senderMAC,
+		c.senderGID, c.senderQP, c.link, c.senderLinkUserID,
+		c.maxLinks)
+}
+
+// reserved converts the LLC confirm link message to string including reserved
+// fields
+func (c *confirmLink) reserved() string {
 	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
@@ -311,10 +323,20 @@ func (a *addLink) parse(buffer []byte) {
 
 // String converts the LLC add link message to string
 func (a *addLink) String() string {
+	aFmt := "LLC Add Link: Type: %d, Length: %d, Reason Code: %s, " +
+		"Reply: %t, Rejection: %t, Sender MAC: %s, Sender GID: %s, " +
+		"Sender QP: %d, Link: %d, MTU: %s, Initial PSN: %d\n"
+	return fmt.Sprintf(aFmt, a.typ, a.length, a.rsnCode, a.reply, a.reject,
+		a.senderMAC, a.senderGID, a.senderQP, a.link, a.mtu, a.psn)
+}
+
+// reserved converts the LLC add link message to string including reserved
+// fields
+func (a *addLink) reserved() string {
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reason Code: %s, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
-		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved : %#x\n"
+		"Reserved: %#x, MTU: %s, Initial PSN: %d, Reserved: %#x\n"
 	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.rsnCode, a.reply,
 		a.reject, a.res2, a.senderMAC, a.senderGID, a.senderQP, a.link,
 		a.res3, a.mtu, a.psn, a.res4)
@@ -424,8 +446,24 @@ func (a *addLinkCont) String() string {
 	}
 
 	aFmt := "LLC Add Link Continuation: Type: %d, Length: %d, " +
+		"Reply: %t, Link: %d, Number of RTokens: %d\n"
+	return fmt.Sprintf(aFmt, a.typ, a.length, a.reply, a.link,
+		a.numRTokens, pairs)
+}
+
+// reserved converts the add link continuation message to a string including
+// reserved fields
+func (a *addLinkCont) reserved() string {
+	var pairs string
+
+	// convert RKey pairs
+	for i := range a.rkeyPairs {
+		pairs = fmt.Sprintf("RKey Pair %d: %s, ", i+1, &a.rkeyPairs[i])
+	}
+
+	aFmt := "LLC Add Link Continuation: Type: %d, Length: %d, " +
 		"Reserved: %#x, Reply: %t, Reserved: %#x, Link: %d, " +
-		"Number of RTokens: %d, Reserved: %#x, %sReserved : %#x\n"
+		"Number of RTokens: %d, Reserved: %#x, %sReserved: %#x\n"
 	return fmt.Sprintf(aFmt, a.typ, a.length, a.res1, a.reply, a.res2,
 		a.link, a.numRTokens, a.res3, pairs, a.res4)
 }
@@ -525,6 +563,15 @@ func (d *deleteLink) parse(buffer []byte) {
 
 // String converts the delete link message to a string
 func (d *deleteLink) String() string {
+	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reply: %t, All: %t, " +
+		"Orderly: %t, Link: %d, Reason Code: %s\n"
+	return fmt.Sprintf(dFmt, d.typ, d.length, d.reply, d.all, d.orderly,
+		d.link, d.rsnCode)
+}
+
+// reserved converts the delete link message to a string including reserved
+// fields
+func (d *deleteLink) reserved() string {
 	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, All: %t, Orderly: %t, Reserved: %#x, Link: %d, " +
 		"Reason Code: %s, Reserved: %#x\n"
@@ -646,6 +693,23 @@ func (c *confirmRKey) String() string {
 			&c.otherRMBs[i])
 	}
 
+	cFmt := "LLC Confirm RKey: Type: %d, Length: %d, Reply: %t, " +
+		"Negative Response: %t, Configuration Retry: %t, " +
+		"Number of Tokens: %d, This RKey: %d, This VAddr: %#x, %s\n"
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.reply, c.reject, c.retry,
+		c.numTkns, c.rkey, c.vaddr, others)
+}
+
+// reserved converts the confirm RKey message to a string including reserved
+// fields
+func (c *confirmRKey) reserved() string {
+	var others string
+
+	for i := range c.otherRMBs {
+		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1,
+			&c.otherRMBs[i])
+	}
+
 	cFmt := "LLC Confirm RKey: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Negative Response: %t, " +
 		"Configuration Retry: %t, Reserved: %#x, " +
@@ -728,6 +792,23 @@ func (c *confirmRKeyCont) parse(buffer []byte) {
 
 // String converts the confirm RKey continuation message to a string
 func (c *confirmRKeyCont) String() string {
+	var others string
+
+	for i := range c.otherRMBs {
+		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1,
+			&c.otherRMBs[i])
+	}
+
+	cFmt := "LLC Confirm RKey Continuation: Type: %d, Length: %d, " +
+		"Reply: %t, Negative Response: %t, Number of Tokens: %d, " +
+		"%s\n"
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.reply, c.reject, c.numTkns,
+		others)
+}
+
+// reserved converts the confirm RKey continuation message to a string
+// including reserved fields
+func (c *confirmRKeyCont) reserved() string {
 	var others string
 
 	for i := range c.otherRMBs {
@@ -836,6 +917,22 @@ func (d *deleteRKey) String() string {
 	}
 
 	dFmt := "LLC Delete RKey: Type: %d, Length: %d, " +
+		"Reply: %t, Negative Response: %t, Count: %d, " +
+		"Error Mask: %#b\n"
+	return fmt.Sprintf(dFmt, d.typ, d.length, d.reply, d.reject, d.count,
+		d.errorMask, rkeys)
+}
+
+// reserved converts the delete RKey message to a string including reserved
+// fields
+func (d *deleteRKey) reserved() string {
+	var rkeys string
+
+	for i := range d.rkeys {
+		rkeys += fmt.Sprintf("RKey %d: %d, ", i, d.rkeys[i])
+	}
+
+	dFmt := "LLC Delete RKey: Type: %d, Length: %d, " +
 		"Reserved: %#x, Reply: %t, Reserved: %#x, " +
 		"Negative Response: %t, Reserved: %#x, " +
 		"Count: %d, Error Mask: %#b, Reserved: %#x, %sReserved: %#x\n"
@@ -894,6 +991,14 @@ func (t *testLink) parse(buffer []byte) {
 
 // String converts the test link message to a string
 func (t *testLink) String() string {
+	tFmt := "LLC Test Link: Type %d, Length: %d, Reply: %t, " +
+		"User Data: %#x\n"
+	return fmt.Sprintf(tFmt, t.typ, t.length, t.reply, t.userData)
+}
+
+// reserved converts the test link message to a string including reserved
+// fields
+func (t *testLink) reserved() string {
 	tFmt := "LLC Test Link: Type %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, User Data: %#x, Reserved: %#x\n"
 	return fmt.Sprintf(tFmt, t.typ, t.length, t.res1, t.reply, t.res2,
@@ -1014,6 +1119,21 @@ func (c *cdc) parse(buffer []byte) {
 // String converts the cdc message into a string
 func (c *cdc) String() string {
 	cFmt := "CDC: Type: %d, Length %d, Sequence Number: %d, " +
+		"Alert Token: %d, Producer Wrap: %d, " +
+		"Producer Cursor: %d, Consumer Wrap: %d, " +
+		"Consumer Cursor: %d, Writer Blocked: %t, " +
+		"Urgent Data Pending: %t, Urgent Data Presend: %t, " +
+		"Request for Consumer Cursor Update: %t, " +
+		"Failover Validation: %t, Sending Done: %t, " +
+		"Peer Connection Closed: %t, Abnormal Close: %t\n"
+	return fmt.Sprintf(cFmt, c.typ, c.length, c.seqNum, c.alertTkn,
+		c.prodWrap, c.prodCurs, c.consWrap, c.consCurs, c.b, c.p, c.u,
+		c.r, c.f, c.d, c.c, c.a)
+}
+
+// reserved converts the cdc message into a string including reserved fields
+func (c *cdc) reserved() string {
+	cFmt := "CDC: Type: %d, Length %d, Sequence Number: %d, " +
 		"Alert Token: %d, Reserved: %#x, Producer Wrap: %d, " +
 		"Producer Cursor: %d, Reserved: %#x, Consumer Wrap: %d, " +
 		"Consumer Cursor: %d, Writer Blocked: %t, " +
@@ -1049,6 +1169,11 @@ func (o *other) parse(buffer []byte) {
 // String converts the other message into a string
 func (o *other) String() string {
 	return "Other Payload\n"
+}
+
+// reserved converts the other message into a string including reserved fields
+func (o *other) reserved() string {
+	return o.String()
 }
 
 // parseOther parses the other message in buffer
@@ -1173,6 +1298,14 @@ func (b *bth) parse(buffer []byte) {
 // String converts the base transport header to a string
 func (b *bth) String() string {
 	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
+		"PKey: %d, FECN: %t, BECN: %t, DestQP: %d, A: %t, PSN: %d\n"
+	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
+		b.fecn, b.becn, b.destQP, b.a, b.psn)
+}
+
+// reserved converts the base transport header to a string
+func (b *bth) reserved() string {
+	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
 		"A: %t, Res: %#x, PSN: %d\n"
 	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
@@ -1215,6 +1348,12 @@ func (g *grh) String() string {
 		"Hop Limit: %d, Source: %s, Destination: %s\n"
 	return fmt.Sprintf(iFmt, g.Version, g.TrafficClass, g.FlowLabel,
 		g.Length, nextHeader, g.HopLimit, g.SrcIP, g.DstIP)
+}
+
+// reserved converts the global routing header to a string including reserved
+// fields
+func (g *grh) reserved() string {
+	return g.String()
 }
 
 // hex returns a hex dump string of the message
