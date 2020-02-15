@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"net/http"
+	"os"
+	"sync"
 	"time"
 
 	"github.com/google/gopacket"
@@ -29,6 +34,12 @@ var (
 	showOther    = flag.Bool("with-other", false, "show other messages")
 	showReserved = flag.Bool("with-reserved", false,
 		"show reserved message fields")
+
+	// console/http output
+	stdout     io.Writer = os.Stdout
+	httpBuffer buffer
+	httpListen = flag.String("http", "",
+		"use http server and set listen address (e.g.: :8000)")
 )
 
 const (
@@ -59,6 +70,29 @@ const (
 	bthNextHeader   = 0x1B
 	bthLen          = 12
 )
+
+// buffer is a bytes.Buffer protected by a mutex
+type buffer struct {
+	lock   sync.Mutex
+	buffer bytes.Buffer
+}
+
+// Write writes p to the buffer
+func (b *buffer) Write(p []byte) (n int, err error) {
+	b.lock.Lock()
+	defer b.lock.Unlock()
+	return b.buffer.Write(p)
+}
+
+// copyBuffer copies the underlying bytes.Buffer and returns it
+func (b *buffer) copyBuffer() *bytes.Buffer {
+	b.lock.Lock()
+	defer b.lock.Unlock()
+	oldBuf := b.buffer.Bytes()
+	newBuf := make([]byte, len(oldBuf))
+	copy(newBuf, oldBuf)
+	return bytes.NewBuffer(newBuf)
+}
 
 // message is an interface for messages
 type message interface {
@@ -1403,7 +1437,7 @@ func output(roceType string, timestamp time.Time, srcMAC gopacket.Endpoint,
 
 	// if there is output, add header and actually print it
 	if out != "" {
-		fmt.Printf("%s %s %s -> %s (%s -> %s):\n%s",
+		fmt.Fprintf(stdout, "%s %s %s -> %s (%s -> %s):\n%s",
 			timestamp.Format("15:04:05.000000"), roceType, srcIP,
 			dstIP, srcMAC, dstMAC, out)
 	}
@@ -1491,6 +1525,14 @@ func parse(packet gopacket.Packet) {
 	}
 }
 
+// printHttp prints the output stored in buffer to http clients
+func printHttp(w http.ResponseWriter, r *http.Request) {
+	b := httpBuffer.copyBuffer()
+	if _, err := io.Copy(w, b); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+}
+
 // listen captures packets on the network interface and parses them
 func listen() {
 	// open pcap handle
@@ -1515,7 +1557,7 @@ func listen() {
 	defer pcapHandle.Close()
 
 	// Use the handle as a packet source to process all packets
-	fmt.Println(startText)
+	fmt.Fprintln(stdout, startText)
 	packetSource := gopacket.NewPacketSource(pcapHandle,
 		pcapHandle.LinkType())
 	for packet := range packetSource.Packets() {
@@ -1527,5 +1569,12 @@ func listen() {
 // main function
 func main() {
 	flag.Parse()
+	if *httpListen != "" {
+		stdout = &httpBuffer
+		go listen()
+		http.HandleFunc("/", printHttp)
+		http.ListenAndServe(*httpListen, nil)
+		return
+	}
 	listen()
 }
