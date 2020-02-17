@@ -1526,7 +1526,7 @@ func parse(packet gopacket.Packet) {
 }
 
 // printHttp prints the output stored in buffer to http clients
-func printHttp(w http.ResponseWriter, r *http.Request) {
+func printHTTP(w http.ResponseWriter, r *http.Request) {
 	b := httpBuffer.copyBuffer()
 	if _, err := io.Copy(w, b); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -1572,7 +1572,7 @@ func main() {
 	if *httpListen != "" {
 		stdout = &httpBuffer
 		go listen()
-		http.HandleFunc("/", printHttp)
+		http.HandleFunc("/", printHTTP)
 		http.ListenAndServe(*httpListen, nil)
 		return
 	}
