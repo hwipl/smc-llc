@@ -131,6 +131,15 @@ func (o opcode) udString() string {
 	return "Reserved"
 }
 
+// cnpString converts the CNP opcode to a string
+func (o opcode) cnpString() string {
+	op := int(o & 0b00011111)
+	if op == 0b00000 {
+		return "CNP"
+	}
+	return "Reserved"
+}
+
 // String converts the opcode to a string
 func (o opcode) String() string {
 	var typ string
@@ -155,6 +164,7 @@ func (o opcode) String() string {
 	case 0b100:
 		// CNP
 		typ = "CNP"
+		op = o.cnpString()
 	case 0b101:
 		// Extended Reliable Connection (XRC)
 		typ = "XRC"
