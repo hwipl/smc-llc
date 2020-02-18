@@ -71,7 +71,7 @@ func (o opcode) ucString() string {
 		"RDMA WRITE Only",
 		"RDMA WRITE Only with Immediate",
 	}
-	// lookup last 5 bits of opcode in rcStrings to get the string
+	// lookup last 5 bits of opcode in ucStrings to get the string
 	op := int(o & 0b00011111)
 	if op < len(ucStrings) {
 		return ucStrings[op]
@@ -105,7 +105,7 @@ func (o opcode) rdString() string {
 		"FetchAdd",
 		"RESYNC",
 	}
-	// lookup last 5 bits of opcode in rcStrings to get the string
+	// lookup last 5 bits of opcode in rdStrings to get the string
 	op := int(o & 0b00011111)
 	if op < len(rdStrings) {
 		return rdStrings[op]
@@ -123,7 +123,7 @@ func (o opcode) udString() string {
 		"SEND Only",
 		"SEND Only with Immediate",
 	}
-	// lookup last 5 bits of opcode in rcStrings to get the string
+	// lookup last 5 bits of opcode in udStrings to get the string
 	op := int(o & 0b00011111)
 	if op < len(udStrings) {
 		return udStrings[op]
