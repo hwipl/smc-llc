@@ -148,41 +148,31 @@ func (o opcode) xrcString() string {
 
 // String converts the opcode to a string
 func (o opcode) String() string {
-	var typ string
 	var op string
 	switch o >> 5 {
 	case 0b000:
 		// Reliable Connection (RC)
-		typ = "RC"
-		op = o.rcString()
+		op = "RC " + o.rcString()
 	case 0b001:
 		// Unreliable Connection (UC)
-		typ = "UC"
-		op = o.ucString()
+		op = "UC " + o.ucString()
 	case 0b010:
 		// Reliable Datagram (RD)
-		typ = "RD"
-		op = o.rdString()
+		op = "RD " + o.rdString()
 	case 0b011:
 		// Unreliable Datagram (UD)
-		typ = "UD"
-		op = o.udString()
+		op = "UD " + o.udString()
 	case 0b100:
 		// CNP
-		typ = "CNP"
-		op = o.cnpString()
+		op = "CNP " + o.cnpString()
 	case 0b101:
 		// Extended Reliable Connection (XRC)
-		typ = "XRC"
-		op = o.xrcString()
-	case 0b110, 0b111:
-		// Manufacturer Specific OpCodes
-		typ = "MSO"
+		op = "XRC " + o.xrcString()
 	default:
-		// unknown
-		typ = "Unknown"
+		// Manufacturer Specific OpCodes
+		op = "Manufacturer Specific"
 	}
-	return fmt.Sprintf("%#b (%s %s)", o, typ, op)
+	return fmt.Sprintf("%#b (%s)", o, op)
 }
 
 // bth stores an ib base transport header
