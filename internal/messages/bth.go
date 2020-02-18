@@ -16,10 +16,18 @@ const (
 	bthLen = 12
 )
 
+// opcode stores the bth opcode
+type opcode uint8
+
+// String converts the opcode to a string
+func (o opcode) String() string {
+	return fmt.Sprintf("%#b", o)
+}
+
 // bth stores an ib base transport header
 type bth struct {
 	baseMsg
-	opcode uint8
+	opcode opcode
 	se     bool
 	m      bool
 	pad    uint8
@@ -42,7 +50,7 @@ func (b *bth) parse(buffer []byte) {
 	b.length = bthLen
 
 	// opcode is 1 byte
-	b.opcode = buffer[0]
+	b.opcode = opcode(buffer[0])
 	buffer = buffer[1:]
 
 	// solicited event is first bit in this byte
@@ -93,7 +101,7 @@ func (b *bth) parse(buffer []byte) {
 
 // String converts the base transport header to a string
 func (b *bth) String() string {
-	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
+	bfmt := "BTH: OpCode: %s, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, DestQP: %d, A: %t, PSN: %d\n"
 	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
 		b.fecn, b.becn, b.destQP, b.a, b.psn)
@@ -101,7 +109,7 @@ func (b *bth) String() string {
 
 // reserved converts the base transport header to a string
 func (b *bth) reserved() string {
-	bfmt := "BTH: OpCode: %#b, SE: %t, M: %t, Pad: %d, TVer: %d, " +
+	bfmt := "BTH: OpCode: %s, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
 		"A: %t, Res: %#x, PSN: %d\n"
 	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
