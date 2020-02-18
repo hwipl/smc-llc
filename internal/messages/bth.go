@@ -140,6 +140,12 @@ func (o opcode) cnpString() string {
 	return "Reserved"
 }
 
+// xrcString converts the extended reliable connection opcode to a string
+func (o opcode) xrcString() string {
+	// xrc strings are the same as rc strings
+	return o.rcString()
+}
+
 // String converts the opcode to a string
 func (o opcode) String() string {
 	var typ string
@@ -168,6 +174,7 @@ func (o opcode) String() string {
 	case 0b101:
 		// Extended Reliable Connection (XRC)
 		typ = "XRC"
+		op = o.xrcString()
 	case 0b110, 0b111:
 		// Manufacturer Specific OpCodes
 		typ = "MSO"
