@@ -113,6 +113,24 @@ func (o opcode) rdString() string {
 	return "Reserved"
 }
 
+// udString converts the unreliable datagram opcode to a string
+func (o opcode) udString() string {
+	var udStrings = [...]string{
+		"Reserved",
+		"Reserved",
+		"Reserved",
+		"Reserved",
+		"SEND Only",
+		"SEND Only with Immediate",
+	}
+	// lookup last 5 bits of opcode in rcStrings to get the string
+	op := int(o & 0b00011111)
+	if op < len(udStrings) {
+		return udStrings[op]
+	}
+	return "Reserved"
+}
+
 // String converts the opcode to a string
 func (o opcode) String() string {
 	var typ string
@@ -133,6 +151,7 @@ func (o opcode) String() string {
 	case 0b011:
 		// Unreliable Datagram (UD)
 		typ = "UD"
+		op = o.udString()
 	case 0b100:
 		// CNP
 		typ = "CNP"
