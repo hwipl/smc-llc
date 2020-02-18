@@ -55,6 +55,30 @@ func (o opcode) rcString() string {
 	return "Reserved"
 }
 
+// ucString converts the unreliable connection opcode to a string
+func (o opcode) ucString() string {
+	var ucStrings = [...]string{
+		"SEND First",
+		"SEND Middle",
+		"SEND Last",
+		"SEND Last with Immediate",
+		"SEND Only",
+		"SEND Only with Immediate",
+		"RDMA WRITE First",
+		"RDMA WRITE Middle",
+		"RDMA WRITE Last",
+		"RDMA WRITE Last with Immediate",
+		"RDMA WRITE Only",
+		"RDMA WRITE Only with Immediate",
+	}
+	// lookup last 5 bits of opcode in rcStrings to get the string
+	op := int(o & 0b00011111)
+	if op < len(ucStrings) {
+		return ucStrings[op]
+	}
+	return "Reserved"
+}
+
 // String converts the opcode to a string
 func (o opcode) String() string {
 	var typ string
@@ -67,6 +91,7 @@ func (o opcode) String() string {
 	case 0b001:
 		// Unreliable Connection (UC)
 		typ = "UC"
+		op = o.ucString()
 	case 0b010:
 		// Reliable Datagram (RD)
 		typ = "RD"
