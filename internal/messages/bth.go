@@ -21,7 +21,34 @@ type opcode uint8
 
 // String converts the opcode to a string
 func (o opcode) String() string {
-	return fmt.Sprintf("%#b", o)
+	var typ string
+	switch o >> 5 {
+	case 0b000:
+		// Reliable Connection (RC)
+		typ = "RC"
+	case 0b001:
+		// Unreliable Connection (UC)
+		typ = "UC"
+	case 0b010:
+		// Reliable Datagram (RD)
+		typ = "RD"
+	case 0b011:
+		// Unreliable Datagram (UD)
+		typ = "UD"
+	case 0b100:
+		// CNP
+		typ = "CNP"
+	case 0b101:
+		// Extended Reliable Connection (XRC)
+		typ = "XRC"
+	case 0b110, 0b111:
+		// Manufacturer Specific OpCodes
+		typ = "MSO"
+	default:
+		// unknown
+		typ = "Unknown"
+	}
+	return fmt.Sprintf("%#b (%s)", o, typ)
 }
 
 // bth stores an ib base transport header
