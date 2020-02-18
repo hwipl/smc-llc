@@ -19,13 +19,51 @@ const (
 // opcode stores the bth opcode
 type opcode uint8
 
+// rcString converts the reliable connection opcode to a string
+func (o opcode) rcString() string {
+	var rcStrings = [...]string{
+		"SEND First",
+		"SEND Middle",
+		"SEND Last",
+		"SEND Last with Immediate",
+		"SEND Only",
+		"SEND Only with Immediate",
+		"RDMA WRITE First",
+		"RDMA WRITE Middle",
+		"RDMA WRITE Last",
+		"RDMA WRITE Last with Immediate",
+		"RDMA WRITE Only",
+		"RDMA WRITE Only with Immediate",
+		"RDMA READ Request",
+		"RDMA READ response First",
+		"RDMA READ response Middle",
+		"RDMA READ response Last",
+		"RDMA READ response Only",
+		"Acknowledge",
+		"ATOMIC Acknowledge",
+		"CmpSwap",
+		"FetchAdd",
+		"Reserved",
+		"SEND Last with Invalidate",
+		"SEND Only with Invalidate",
+	}
+	// lookup last 5 bits of opcode in rcStrings to get the string
+	op := int(o & 0b00011111)
+	if op < len(rcStrings) {
+		return rcStrings[op]
+	}
+	return "Reserved"
+}
+
 // String converts the opcode to a string
 func (o opcode) String() string {
 	var typ string
+	var op string
 	switch o >> 5 {
 	case 0b000:
 		// Reliable Connection (RC)
 		typ = "RC"
+		op = o.rcString()
 	case 0b001:
 		// Unreliable Connection (UC)
 		typ = "UC"
@@ -48,7 +86,7 @@ func (o opcode) String() string {
 		// unknown
 		typ = "Unknown"
 	}
-	return fmt.Sprintf("%#b (%s)", o, typ)
+	return fmt.Sprintf("%#b (%s %s)", o, typ, op)
 }
 
 // bth stores an ib base transport header
