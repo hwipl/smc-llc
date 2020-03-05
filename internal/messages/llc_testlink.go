@@ -14,16 +14,9 @@ type testLink struct {
 
 // parse fills the testLink fields from the test link message in buffer
 func (t *testLink) parse(buffer []byte) {
-	// save raw message bytes
-	t.setRaw(buffer)
-
-	// Message type is 1 byte
-	t.typ = int(buffer[0])
-	buffer = buffer[1:]
-
-	// Message length is 1 byte, should be equal to 44
-	t.length = int(buffer[0])
-	buffer = buffer[1:]
+	// init base message fields
+	t.setBaseMsg(buffer)
+	buffer = buffer[2:]
 
 	// Reserved 1 byte
 	t.res1 = buffer[0]

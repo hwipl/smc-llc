@@ -15,6 +15,19 @@ func (b *baseMsg) setRaw(buffer []byte) {
 	copy(b.raw[:], buffer[:])
 }
 
+// setBaseMsg initializes base message from buffer
+func (b *baseMsg) setBaseMsg(buffer []byte) {
+	// save raw message bytes
+	b.setRaw(buffer)
+
+	// Message type is 1 byte
+	b.typ = int(buffer[0])
+	buffer = buffer[1:]
+
+	// Message length is 1 byte, should be equal to 44
+	b.length = int(buffer[0])
+}
+
 // hex converts the message to a hex dump string
 func (b *baseMsg) hex() string {
 	return hex.Dump(b.raw)

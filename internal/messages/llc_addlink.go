@@ -70,16 +70,9 @@ type addLink struct {
 
 // parse fills the addLink fields from the LLC add link message in buffer
 func (a *addLink) parse(buffer []byte) {
-	// save raw message bytes
-	a.setRaw(buffer)
-
-	// Message type is 1 byte
-	a.typ = int(buffer[0])
-	buffer = buffer[1:]
-
-	// Message length is 1 byte, should be equal to 44
-	a.length = int(buffer[0])
-	buffer = buffer[1:]
+	// init base message fields
+	a.setBaseMsg(buffer)
+	buffer = buffer[2:]
 
 	// Reserved are first 4 bits in this byte
 	a.res1 = buffer[0] >> 4

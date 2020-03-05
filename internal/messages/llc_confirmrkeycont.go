@@ -19,16 +19,9 @@ type confirmRKeyCont struct {
 // message in buffer
 func (c *confirmRKeyCont) parse(buffer []byte) {
 	// TODO: merge with confirmRKey()?
-	// save raw message bytes
-	c.setRaw(buffer)
-
-	// Message type is 1 byte
-	c.typ = int(buffer[0])
-	buffer = buffer[1:]
-
-	// Message length is 1 byte, should be equal to 44
-	c.length = int(buffer[0])
-	buffer = buffer[1:]
+	// init base message fields
+	c.setBaseMsg(buffer)
+	buffer = buffer[2:]
 
 	// Reserved 1 byte
 	c.res1 = buffer[0]

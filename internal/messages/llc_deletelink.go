@@ -51,16 +51,9 @@ type deleteLink struct {
 
 // parse fills the deleteLink fields from the LLC delete link message in buffer
 func (d *deleteLink) parse(buffer []byte) {
-	// save raw message bytes
-	d.setRaw(buffer)
-
-	// Message type is 1 byte
-	d.typ = int(buffer[0])
-	buffer = buffer[1:]
-
-	// Message length is 1 byte, should be equal to 44
-	d.length = int(buffer[0])
-	buffer = buffer[1:]
+	// init base message fields
+	d.setBaseMsg(buffer)
+	buffer = buffer[2:]
 
 	// Reserved 1 byte
 	d.res1 = buffer[0]
