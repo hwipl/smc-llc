@@ -115,7 +115,7 @@ func (c *cdc) String() string {
 		"Alert Token: %d, Producer Wrap: %d, " +
 		"Producer Cursor: %d, Consumer Wrap: %d, " +
 		"Consumer Cursor: %d, Writer Blocked: %t, " +
-		"Urgent Data Pending: %t, Urgent Data Presend: %t, " +
+		"Urgent Data Pending: %t, Urgent Data Present: %t, " +
 		"Request for Consumer Cursor Update: %t, " +
 		"Failover Validation: %t, Sending Done: %t, " +
 		"Peer Connection Closed: %t, Abnormal Close: %t\n"
@@ -130,7 +130,7 @@ func (c *cdc) reserved() string {
 		"Alert Token: %d, Reserved: %#x, Producer Wrap: %d, " +
 		"Producer Cursor: %d, Reserved: %#x, Consumer Wrap: %d, " +
 		"Consumer Cursor: %d, Writer Blocked: %t, " +
-		"Urgent Data Pending: %t, Urgent Data Presend: %t, " +
+		"Urgent Data Pending: %t, Urgent Data Present: %t, " +
 		"Request for Consumer Cursor Update: %t, " +
 		"Failover Validation: %t, Reserved: %#x, Sending Done: %t, " +
 		"Peer Connection Closed: %t, Abnormal Close: %t, " +
