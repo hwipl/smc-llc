@@ -79,12 +79,12 @@ func (d *deleteRKey) String() string {
 	var rkeys string
 
 	for i := range d.rkeys {
-		rkeys += fmt.Sprintf("RKey %d: %d, ", i, d.rkeys[i])
+		rkeys += fmt.Sprintf(", RKey %d: %d", i, d.rkeys[i])
 	}
 
 	dFmt := "LLC Delete RKey: Type: %d, Length: %d, " +
 		"Reply: %t, Negative Response: %t, Count: %d, " +
-		"Error Mask: %#b\n"
+		"Error Mask: %#b%s\n"
 	return fmt.Sprintf(dFmt, d.typ, d.length, d.reply, d.reject, d.count,
 		d.errorMask, rkeys)
 }
