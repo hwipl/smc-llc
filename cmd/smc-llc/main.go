@@ -13,7 +13,7 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 
-	"github.com/hwipl/smc-llc/internal/messages"
+	"github.com/hwipl/smc-llc/internal/llc"
 )
 
 // variable definitions
