@@ -1,4 +1,4 @@
-package messages
+package llc
 
 const (
 	// llc/cdc messages are 44 bytes long

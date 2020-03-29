@@ -1,4 +1,4 @@
-package messages
+package llc
 
 const (
 	// internal message type for other/non-LLC messages

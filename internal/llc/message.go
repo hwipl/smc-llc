@@ -1,4 +1,4 @@
-package messages
+package llc
 
 // message is an interface for messages
 type message interface {
