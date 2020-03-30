@@ -63,13 +63,12 @@ func (c *confirmRKeyCont) String() string {
 	var others string
 
 	for i := range c.otherRMBs {
-		others += fmt.Sprintf("Other Link RMB %d: %s, ", i+1,
+		others += fmt.Sprintf(", Other Link RMB %d: %s", i+1,
 			&c.otherRMBs[i])
 	}
 
 	cFmt := "LLC Confirm RKey Continuation: Type: %d, Length: %d, " +
-		"Reply: %t, Negative Response: %t, Number of Tokens: %d, " +
-		"%s\n"
+		"Reply: %t, Negative Response: %t, Number of Tokens: %d%s\n"
 	return fmt.Sprintf(cFmt, c.typ, c.length, c.reply, c.reject, c.numTkns,
 		others)
 }
