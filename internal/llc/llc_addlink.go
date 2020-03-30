@@ -59,6 +59,7 @@ type addLink struct {
 	reject    bool
 	res2      byte
 	senderMAC net.HardwareAddr
+	res5      [2]byte // not in the RFC
 	senderGID net.IP
 	senderQP  uint32
 	link      uint8
@@ -95,6 +96,11 @@ func (a *addLink) parse(buffer []byte) {
 	a.senderMAC = make(net.HardwareAddr, 6)
 	copy(a.senderMAC[:], buffer[0:6])
 	buffer = buffer[6:]
+
+	// in the linux code, there are 2 more reserved bytes here that are not
+	// in the RFC
+	copy(a.res5[:], buffer[0:2])
+	buffer = buffer[2:]
 
 	// sender GID is an 16 bytes IPv6 address
 	a.senderGID = make(net.IP, net.IPv6len)
