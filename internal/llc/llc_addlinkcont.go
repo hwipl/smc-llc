@@ -91,11 +91,11 @@ func (a *addLinkCont) String() string {
 
 	// convert RKey pairs
 	for i := range a.rkeyPairs {
-		pairs = fmt.Sprintf("RKey Pair %d: %s, ", i+1, &a.rkeyPairs[i])
+		pairs = fmt.Sprintf(", RKey Pair %d: %s", i+1, &a.rkeyPairs[i])
 	}
 
 	aFmt := "LLC Add Link Continuation: Type: %d, Length: %d, " +
-		"Reply: %t, Link: %d, Number of RTokens: %d\n"
+		"Reply: %t, Link: %d, Number of RTokens: %d%s\n"
 	return fmt.Sprintf(aFmt, a.typ, a.length, a.reply, a.link,
 		a.numRTokens, pairs)
 }
