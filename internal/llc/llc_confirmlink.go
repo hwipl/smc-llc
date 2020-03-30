@@ -73,7 +73,7 @@ func (c *confirmLink) parse(buffer []byte) {
 
 // String converts the LLC confirm link message to string
 func (c *confirmLink) String() string {
-	cFmt := "LLC Confirm: Type: %d, Length: %d, Reply: %t, " +
+	cFmt := "LLC Confirm Link: Type: %d, Length: %d, Reply: %t, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +
 		"Sender Link UserID: %d, Max Links: %d\n"
 	return fmt.Sprintf(cFmt, c.typ, c.length, c.reply, c.senderMAC,
@@ -84,7 +84,7 @@ func (c *confirmLink) String() string {
 // reserved converts the LLC confirm link message to string including reserved
 // fields
 func (c *confirmLink) reserved() string {
-	cFmt := "LLC Confirm: Type: %d, Length: %d, Reserved: %#x, " +
+	cFmt := "LLC Confirm Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +
 		"Max Links: %d, Reserved: %#x\n"
