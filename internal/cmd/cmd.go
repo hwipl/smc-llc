@@ -44,6 +44,14 @@ func printHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// setHTTPOutput sets the standard output to http and starts a http server
+func setHTTPOutput() {
+	stdout = &httpBuffer
+
+	http.HandleFunc("/", printHTTP)
+	go http.ListenAndServe(*httpListen, nil)
+}
+
 // listen captures packets on the network interface and parses them
 func listen() {
 	// open pcap handle
@@ -85,11 +93,7 @@ func listen() {
 func Run() {
 	flag.Parse()
 	if *httpListen != "" {
-		stdout = &httpBuffer
-		go listen()
-		http.HandleFunc("/", printHTTP)
-		http.ListenAndServe(*httpListen, nil)
-		return
+		setHTTPOutput()
 	}
 	listen()
 }
