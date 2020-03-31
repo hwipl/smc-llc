@@ -31,6 +31,7 @@ var (
 
 	// console/http output
 	stdout     io.Writer = os.Stdout
+	stderr     io.Writer = os.Stdout
 	httpBuffer buffer
 	httpListen = flag.String("http", "",
 		"use http server and set listen address (e.g.: :8000)")
@@ -47,6 +48,7 @@ func printHTTP(w http.ResponseWriter, r *http.Request) {
 // setHTTPOutput sets the standard output to http and starts a http server
 func setHTTPOutput() {
 	stdout = &httpBuffer
+	stderr = &httpBuffer
 
 	http.HandleFunc("/", printHTTP)
 	go http.ListenAndServe(*httpListen, nil)
@@ -95,5 +97,6 @@ func Run() {
 	if *httpListen != "" {
 		setHTTPOutput()
 	}
+	log.SetOutput(stderr)
 	listen()
 }
