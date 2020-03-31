@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/google/gopacket"
@@ -32,27 +31,9 @@ var (
 	// console/http output
 	stdout     io.Writer = os.Stdout
 	stderr     io.Writer = os.Stdout
-	httpBuffer buffer
-	httpListen = flag.String("http", "",
+	httpListen           = flag.String("http", "",
 		"use http server and set listen address (e.g.: :8000)")
 )
-
-// printHttp prints the output stored in buffer to http clients
-func printHTTP(w http.ResponseWriter, r *http.Request) {
-	b := httpBuffer.copyBuffer()
-	if _, err := io.Copy(w, b); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-}
-
-// setHTTPOutput sets the standard output to http and starts a http server
-func setHTTPOutput() {
-	stdout = &httpBuffer
-	stderr = &httpBuffer
-
-	http.HandleFunc("/", printHTTP)
-	go http.ListenAndServe(*httpListen, nil)
-}
 
 // listen captures packets on the network interface and parses them
 func listen() {
