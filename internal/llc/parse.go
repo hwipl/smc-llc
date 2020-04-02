@@ -15,7 +15,7 @@ const (
 )
 
 // parsePayload parses the payload in buffer to extract llc messages
-func parsePayload(buffer []byte) message {
+func parsePayload(buffer []byte) Message {
 	// llc messages are 44 byte long
 	if len(buffer) == llcMsgLen {
 		return parseLLC(buffer)
@@ -29,7 +29,7 @@ func parsePayload(buffer []byte) message {
 func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	roceType string, timestamp time.Time,
 	srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
-	parts []message) string {
+	parts []Message) string {
 	// construct output string
 	var out string = ""
 	for _, p := range parts {
@@ -65,7 +65,7 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 func parseRoCEv1(showGRH, showBTH, showOther, showReserved, showHex bool,
 	timestamp time.Time, srcMAC, dstMAC gopacket.Endpoint,
 	buffer []byte) string {
-	var parts []message
+	var parts []Message
 
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
 	grh := parseGRH(buffer[:grhLen])
@@ -95,7 +95,7 @@ func parseRoCEv1(showGRH, showBTH, showOther, showReserved, showHex bool,
 func parseRoCEv2(showGRH, showBTH, showOther, showReserved, showHex bool,
 	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
 	buffer []byte) string {
-	var parts []message
+	var parts []Message
 
 	// Base Transport Header (BTH) is 12 bytes
 	bth := parseBTH(buffer[:bthLen])

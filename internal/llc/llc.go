@@ -19,7 +19,7 @@ const (
 )
 
 // parseLLC parses the LLC message in buffer
-func parseLLC(buffer []byte) message {
+func parseLLC(buffer []byte) Message {
 	switch buffer[0] {
 	case typeConfirmLink:
 		return parseConfirm(buffer)

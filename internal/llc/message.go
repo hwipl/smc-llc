@@ -1,7 +1,7 @@
 package llc
 
-// message is an interface for messages
-type message interface {
+// Message is an interface for messages
+type Message interface {
 	parse(buffer []byte)
 	String() string
 	reserved() string
