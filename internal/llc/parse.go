@@ -8,12 +8,6 @@ import (
 	"github.com/google/gopacket/layers"
 )
 
-const (
-	// roce
-	rocev1EtherType = 0x8915
-	rocev2UDPPort   = 4791
-)
-
 // parsePayload parses the payload in buffer to extract llc messages
 func parsePayload(buffer []byte) Message {
 	// llc messages are 44 byte long
