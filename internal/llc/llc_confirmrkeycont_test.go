@@ -62,11 +62,11 @@ func TestConfirmRKeyCont(t *testing.T) {
 		t.Errorf("c.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeConfirmRKeyCont
-	gotType := c.getType()
+	gotType := c.GetType()
 	if gotType != wantType {
-		t.Errorf("c.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("c.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

@@ -55,11 +55,11 @@ func TestDeleteLink(t *testing.T) {
 		t.Errorf("d.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeDeleteLink
-	gotType := d.getType()
+	gotType := d.GetType()
 	if gotType != wantType {
-		t.Errorf("d.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("d.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

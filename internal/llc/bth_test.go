@@ -47,11 +47,11 @@ func TestBTH(t *testing.T) {
 		t.Errorf("bth.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeBTH
-	gotType := bth.getType()
+	gotType := bth.GetType()
 	if gotType != wantType {
-		t.Errorf("bth.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("bth.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

@@ -51,11 +51,11 @@ func TestGRH(t *testing.T) {
 		t.Errorf("grh.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeGRH
-	gotType := grh.getType()
+	gotType := grh.GetType()
 	if gotType != wantType {
-		t.Errorf("grh.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("grh.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

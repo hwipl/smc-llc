@@ -33,13 +33,13 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	// construct output string
 	var out string = ""
 	for _, p := range parts {
-		if p.getType() == typeGRH && !showGRH {
+		if p.GetType() == typeGRH && !showGRH {
 			continue
 		}
-		if p.getType() == typeBTH && !showBTH {
+		if p.GetType() == typeBTH && !showBTH {
 			continue
 		}
-		if p.getType() == typeOther && !showOther {
+		if p.GetType() == typeOther && !showOther {
 			continue
 		}
 		if showReserved {

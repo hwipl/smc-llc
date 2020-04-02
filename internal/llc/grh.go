@@ -58,8 +58,8 @@ func (g *grh) Hex() string {
 	return hex.Dump(g.Contents)
 }
 
-// getType returns the type of the message
-func (g *grh) getType() int {
+// GetType returns the type of the message
+func (g *grh) GetType() int {
 	return typeGRH
 }
 

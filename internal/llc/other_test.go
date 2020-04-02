@@ -43,11 +43,11 @@ func TestOther(t *testing.T) {
 		t.Errorf("o.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeOther
-	gotType := o.getType()
+	gotType := o.GetType()
 	if gotType != wantType {
-		t.Errorf("o.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("o.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

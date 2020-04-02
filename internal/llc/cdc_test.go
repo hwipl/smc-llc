@@ -65,11 +65,11 @@ func TestCDC(t *testing.T) {
 		t.Errorf("cdc.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeCDC
-	gotType := cdc.getType()
+	gotType := cdc.GetType()
 	if gotType != wantType {
-		t.Errorf("cdc.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("cdc.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

@@ -51,11 +51,11 @@ func TestTestLink(t *testing.T) {
 		t.Errorf("tl.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeTestLink
-	gotType := tl.getType()
+	gotType := tl.GetType()
 	if gotType != wantType {
-		t.Errorf("tl.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("tl.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

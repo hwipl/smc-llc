@@ -33,7 +33,7 @@ func (b *baseMsg) Hex() string {
 	return hex.Dump(b.raw)
 }
 
-// getType returns the type of the message
-func (b *baseMsg) getType() int {
+// GetType returns the type of the message
+func (b *baseMsg) GetType() int {
 	return b.typ
 }

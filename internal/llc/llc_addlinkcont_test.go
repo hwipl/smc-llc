@@ -56,11 +56,11 @@ func TestAddLinkCont(t *testing.T) {
 		t.Errorf("a.Hex() = %s; want %s", got, want)
 	}
 
-	// test getType()
+	// test GetType()
 	wantType := typeAddLinkCont
-	gotType := a.getType()
+	gotType := a.GetType()
 	if gotType != wantType {
-		t.Errorf("a.getType() = %d; want %d", gotType, wantType)
+		t.Errorf("a.GetType() = %d; want %d", gotType, wantType)
 	}
 
 }

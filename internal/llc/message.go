@@ -6,5 +6,5 @@ type Message interface {
 	String() string
 	Reserved() string
 	Hex() string
-	getType() int
+	GetType() int
 }
