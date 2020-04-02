@@ -42,9 +42,9 @@ type addLinkCont struct {
 	res4       [4]byte
 }
 
-// parse fills the addLinkCont fields from the LLC add link continuation
+// Parse fills the addLinkCont fields from the LLC add link continuation
 // message in buffer
-func (a *addLinkCont) parse(buffer []byte) {
+func (a *addLinkCont) Parse(buffer []byte) {
 	// init base message fields
 	a.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -120,6 +120,6 @@ func (a *addLinkCont) reserved() string {
 // parseAddLinkCont parses the LLC add link continuation message in buffer
 func parseAddLinkCont(buffer []byte) *addLinkCont {
 	var addCont addLinkCont
-	addCont.parse(buffer)
+	addCont.Parse(buffer)
 	return &addCont
 }

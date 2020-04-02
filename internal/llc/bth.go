@@ -193,8 +193,8 @@ type bth struct {
 	psn    uint32
 }
 
-// parse fills the bth fields from the base transport header in buffer
-func (b *bth) parse(buffer []byte) {
+// Parse fills the bth fields from the base transport header in buffer
+func (b *bth) Parse(buffer []byte) {
 	// save raw message bytes, set internal type and length
 	b.setRaw(buffer)
 	b.typ = typeBTH
@@ -270,6 +270,6 @@ func (b *bth) reserved() string {
 // parseBTH parses the BTH header in buffer
 func parseBTH(buffer []byte) *bth {
 	var b bth
-	b.parse(buffer)
+	b.Parse(buffer)
 	return &b
 }

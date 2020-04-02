@@ -19,8 +19,8 @@ const (
 // grh stores an ib global routing header
 type grh layers.IPv6
 
-// parse fills the grh fields from the global routing header in buffer
-func (g *grh) parse(buffer []byte) {
+// Parse fills the grh fields from the global routing header in buffer
+func (g *grh) Parse(buffer []byte) {
 	// parse buffer as IPv6 packet
 	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
 		gopacket.Default)
@@ -66,6 +66,6 @@ func (g *grh) getType() int {
 // parseGRH parses the global routing header in buffer
 func parseGRH(buffer []byte) *grh {
 	var g grh
-	g.parse(buffer)
+	g.Parse(buffer)
 	return &g
 }

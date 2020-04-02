@@ -21,9 +21,9 @@ type confirmLink struct {
 	res3             [9]byte
 }
 
-// parse fills the confirmLink fields from the LLC confirm link message in
+// Parse fills the confirmLink fields from the LLC confirm link message in
 // buffer
-func (c *confirmLink) parse(buffer []byte) {
+func (c *confirmLink) Parse(buffer []byte) {
 	// init base message fields
 	c.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -96,6 +96,6 @@ func (c *confirmLink) reserved() string {
 // parseConfirm parses and prints the LLC confirm link message in buffer
 func parseConfirm(buffer []byte) *confirmLink {
 	var confirm confirmLink
-	confirm.parse(buffer)
+	confirm.Parse(buffer)
 	return &confirm
 }

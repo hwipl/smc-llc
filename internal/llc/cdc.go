@@ -28,8 +28,8 @@ type cdc struct {
 	res4     [19]byte
 }
 
-// parse fills the cdc fields from the CDC message in buffer
-func (c *cdc) parse(buffer []byte) {
+// Parse fills the cdc fields from the CDC message in buffer
+func (c *cdc) Parse(buffer []byte) {
 	// save raw message bytes
 	c.setRaw(buffer)
 
@@ -143,6 +143,6 @@ func (c *cdc) reserved() string {
 // parseCDC parses the CDC message in buffer
 func parseCDC(buffer []byte) *cdc {
 	var c cdc
-	c.parse(buffer)
+	c.Parse(buffer)
 	return &c
 }

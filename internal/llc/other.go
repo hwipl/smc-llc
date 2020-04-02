@@ -10,8 +10,8 @@ type other struct {
 	baseMsg
 }
 
-// parse fills the other fields from the other message in buffer
-func (o *other) parse(buffer []byte) {
+// Parse fills the other fields from the other message in buffer
+func (o *other) Parse(buffer []byte) {
 	o.setRaw(buffer)
 	o.typ = typeOther
 	o.length = len(buffer)
@@ -30,6 +30,6 @@ func (o *other) reserved() string {
 // parseOther parses the other message in buffer
 func parseOther(buffer []byte) *other {
 	var o other
-	o.parse(buffer)
+	o.Parse(buffer)
 	return &o
 }

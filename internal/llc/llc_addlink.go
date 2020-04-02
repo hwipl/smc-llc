@@ -69,8 +69,8 @@ type addLink struct {
 	res4      [10]byte
 }
 
-// parse fills the addLink fields from the LLC add link message in buffer
-func (a *addLink) parse(buffer []byte) {
+// Parse fills the addLink fields from the LLC add link message in buffer
+func (a *addLink) Parse(buffer []byte) {
 	// init base message fields
 	a.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -158,6 +158,6 @@ func (a *addLink) reserved() string {
 // parseAddLink parses and prints the LLC add link message in buffer
 func parseAddLink(buffer []byte) *addLink {
 	var add addLink
-	add.parse(buffer)
+	add.Parse(buffer)
 	return &add
 }

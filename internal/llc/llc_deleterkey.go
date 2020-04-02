@@ -20,8 +20,8 @@ type deleteRKey struct {
 	res5      [4]byte
 }
 
-// parse fills the deleteRKey fields from the delete RKey message in buffer
-func (d *deleteRKey) parse(buffer []byte) {
+// Parse fills the deleteRKey fields from the delete RKey message in buffer
+func (d *deleteRKey) Parse(buffer []byte) {
 	// init base message fields
 	d.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -109,6 +109,6 @@ func (d *deleteRKey) reserved() string {
 // parseDeleteRKey parses the LLC delete RKey message in buffer
 func parseDeleteRKey(buffer []byte) *deleteRKey {
 	var del deleteRKey
-	del.parse(buffer)
+	del.Parse(buffer)
 	return &del
 }

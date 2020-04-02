@@ -15,9 +15,9 @@ type confirmRKeyCont struct {
 	res4      byte
 }
 
-// parse fills the confirmRKey fields from the confirm RKey continuation
+// Parse fills the confirmRKey fields from the confirm RKey continuation
 // message in buffer
-func (c *confirmRKeyCont) parse(buffer []byte) {
+func (c *confirmRKeyCont) Parse(buffer []byte) {
 	// TODO: merge with confirmRKey()?
 	// init base message fields
 	c.setBaseMsg(buffer)
@@ -95,6 +95,6 @@ func (c *confirmRKeyCont) reserved() string {
 // buffer
 func parseConfirmRKeyCont(buffer []byte) *confirmRKeyCont {
 	var confirmCont confirmRKeyCont
-	confirmCont.parse(buffer)
+	confirmCont.Parse(buffer)
 	return &confirmCont
 }

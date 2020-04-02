@@ -49,8 +49,8 @@ type deleteLink struct {
 	res3    [35]byte
 }
 
-// parse fills the deleteLink fields from the LLC delete link message in buffer
-func (d *deleteLink) parse(buffer []byte) {
+// Parse fills the deleteLink fields from the LLC delete link message in buffer
+func (d *deleteLink) Parse(buffer []byte) {
 	// init base message fields
 	d.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -105,6 +105,6 @@ func (d *deleteLink) reserved() string {
 // parseDeleteLink parses the LLC delete link message in buffer
 func parseDeleteLink(buffer []byte) *deleteLink {
 	var del deleteLink
-	del.parse(buffer)
+	del.Parse(buffer)
 	return &del
 }

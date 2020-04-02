@@ -12,8 +12,8 @@ type testLink struct {
 	res3     [24]byte
 }
 
-// parse fills the testLink fields from the test link message in buffer
-func (t *testLink) parse(buffer []byte) {
+// Parse fills the testLink fields from the test link message in buffer
+func (t *testLink) Parse(buffer []byte) {
 	// init base message fields
 	t.setBaseMsg(buffer)
 	buffer = buffer[2:]
@@ -56,6 +56,6 @@ func (t *testLink) reserved() string {
 // parseTestLink parses the LLC test link message in buffer
 func parseTestLink(buffer []byte) *testLink {
 	var test testLink
-	test.parse(buffer)
+	test.Parse(buffer)
 	return &test
 }

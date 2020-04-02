@@ -2,7 +2,7 @@ package llc
 
 // Message is an interface for messages
 type Message interface {
-	parse(buffer []byte)
+	Parse(buffer []byte)
 	String() string
 	reserved() string
 	hex() string
