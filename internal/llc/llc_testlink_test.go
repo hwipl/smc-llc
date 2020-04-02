@@ -33,15 +33,15 @@ func TestTestLink(t *testing.T) {
 		t.Errorf("tl.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Test Link: Type 7, Length: 44, Reserved: 0x0, " +
 		"Reply: true, Reserved: 0x0, " +
 		"User Data: 0x00000000000000000000000000000000, " +
 		"Reserved: 0x00000000000000000000000000000000000" +
 		"0000000000000\n"
-	got = tl.reserved()
+	got = tl.Reserved()
 	if got != want {
-		t.Errorf("tl.reserved() = %s; want %s", got, want)
+		t.Errorf("tl.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

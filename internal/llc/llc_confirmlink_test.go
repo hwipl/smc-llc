@@ -39,16 +39,16 @@ func TestConfirmLink(t *testing.T) {
 		t.Errorf("c.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Confirm Link: Type: 1, Length: 44, Reserved: 0x0, " +
 		"Reply: false, Reserved: 0x3, " +
 		"Sender MAC: 98:03:9b:ab:cd:ef, " +
 		"Sender GID: fe80::9a03:9bff:feab:cdef, " +
 		"Sender QP: 263, Link: 0, Sender Link UserID: 65536, " +
 		"Max Links: 2, Reserved: 0x000000000000000000\n"
-	got = c.reserved()
+	got = c.Reserved()
 	if got != want {
-		t.Errorf("c.reserved() = %s; want %s", got, want)
+		t.Errorf("c.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

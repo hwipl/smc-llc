@@ -4,7 +4,7 @@ package llc
 type Message interface {
 	Parse(buffer []byte)
 	String() string
-	reserved() string
+	Reserved() string
 	hex() string
 	getType() int
 }

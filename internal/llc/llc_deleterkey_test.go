@@ -38,16 +38,16 @@ func TestDeleteRKey(t *testing.T) {
 		t.Errorf("d.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Delete RKey: Type: 9, Length: 44, Reserved: 0x0, " +
 		"Reply: false, Reserved: 0x0, Negative Response: false, " +
 		"Reserved: 0x0, Count: 1, Error Mask: 0b0, " +
 		"Reserved: 0x0000, RKey 0: 5469, RKey 1: 0, RKey 2: 0, " +
 		"RKey 3: 0, RKey 4: 0, RKey 5: 0, RKey 6: 0, RKey 7: 0, " +
 		"Reserved: 0x00000000\n"
-	got = d.reserved()
+	got = d.Reserved()
 	if got != want {
-		t.Errorf("d.reserved() = %s; want %s", got, want)
+		t.Errorf("d.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

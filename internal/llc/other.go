@@ -22,8 +22,8 @@ func (o *other) String() string {
 	return "Other Payload\n"
 }
 
-// reserved converts the other message into a string including reserved fields
-func (o *other) reserved() string {
+// Reserved converts the other message into a string including reserved fields
+func (o *other) Reserved() string {
 	return o.String()
 }
 

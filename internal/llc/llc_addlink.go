@@ -143,9 +143,9 @@ func (a *addLink) String() string {
 		a.senderMAC, a.senderGID, a.senderQP, a.link, a.mtu, a.psn)
 }
 
-// reserved converts the LLC add link message to string including reserved
+// Reserved converts the LLC add link message to string including reserved
 // fields
-func (a *addLink) reserved() string {
+func (a *addLink) Reserved() string {
 	aFmt := "LLC Add Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reason Code: %s, Reply: %t, Rejection: %t, Reserved: %#x, " +
 		"Sender MAC: %s, Sender GID: %s, Sender QP: %d, Link: %d, " +

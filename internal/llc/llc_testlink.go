@@ -44,9 +44,9 @@ func (t *testLink) String() string {
 	return fmt.Sprintf(tFmt, t.typ, t.length, t.reply, t.userData)
 }
 
-// reserved converts the test link message to a string including reserved
+// Reserved converts the test link message to a string including reserved
 // fields
-func (t *testLink) reserved() string {
+func (t *testLink) Reserved() string {
 	tFmt := "LLC Test Link: Type %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, User Data: %#x, Reserved: %#x\n"
 	return fmt.Sprintf(tFmt, t.typ, t.length, t.res1, t.reply, t.res2,

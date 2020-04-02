@@ -124,8 +124,8 @@ func (c *cdc) String() string {
 		c.r, c.f, c.d, c.c, c.a)
 }
 
-// reserved converts the cdc message into a string including reserved fields
-func (c *cdc) reserved() string {
+// Reserved converts the cdc message into a string including reserved fields
+func (c *cdc) Reserved() string {
 	cFmt := "CDC: Type: %d, Length %d, Sequence Number: %d, " +
 		"Alert Token: %d, Reserved: %#x, Producer Wrap: %d, " +
 		"Producer Cursor: %d, Reserved: %#x, Consumer Wrap: %d, " +

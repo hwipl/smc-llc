@@ -42,7 +42,7 @@ func TestCDC(t *testing.T) {
 		t.Errorf("cdc.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "CDC: Type: 254, Length 44, Sequence Number: 1, " +
 		"Alert Token: 3, Reserved: 0x0000, Producer Wrap: 0, " +
 		"Producer Cursor: 13, Reserved: 0x0000, Consumer Wrap: 0, " +
@@ -53,9 +53,9 @@ func TestCDC(t *testing.T) {
 		"Sending Done: false, Peer Connection Closed: false, " +
 		"Abnormal Close: false, " +
 		"Reserved: 0x00000000000000000000000000000000000000\n"
-	got = cdc.reserved()
+	got = cdc.Reserved()
 	if got != want {
-		t.Errorf("cdc.reserved() = %s; want %s", got, want)
+		t.Errorf("cdc.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

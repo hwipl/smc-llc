@@ -100,9 +100,9 @@ func (a *addLinkCont) String() string {
 		a.numRTokens, pairs)
 }
 
-// reserved converts the add link continuation message to a string including
+// Reserved converts the add link continuation message to a string including
 // reserved fields
-func (a *addLinkCont) reserved() string {
+func (a *addLinkCont) Reserved() string {
 	var pairs string
 
 	// convert RKey pairs

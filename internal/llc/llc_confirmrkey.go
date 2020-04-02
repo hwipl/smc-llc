@@ -112,9 +112,9 @@ func (c *confirmRKey) String() string {
 		c.numTkns, c.rkey, c.vaddr, others)
 }
 
-// reserved converts the confirm RKey message to a string including reserved
+// Reserved converts the confirm RKey message to a string including reserved
 // fields
-func (c *confirmRKey) reserved() string {
+func (c *confirmRKey) Reserved() string {
 	var others string
 
 	for i := range c.otherRMBs {

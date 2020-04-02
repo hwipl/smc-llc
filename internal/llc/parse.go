@@ -43,7 +43,7 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 			continue
 		}
 		if showReserved {
-			out += p.reserved()
+			out += p.Reserved()
 		} else {
 			out += p.String()
 		}

@@ -81,9 +81,9 @@ func (c *confirmLink) String() string {
 		c.maxLinks)
 }
 
-// reserved converts the LLC confirm link message to string including reserved
+// Reserved converts the LLC confirm link message to string including reserved
 // fields
-func (c *confirmLink) reserved() string {
+func (c *confirmLink) Reserved() string {
 	cFmt := "LLC Confirm Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, Reserved: %#x, Sender MAC: %s, Sender GID: %s, " +
 		"Sender QP: %d, Link: %d, Sender Link UserID: %d, " +

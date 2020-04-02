@@ -39,16 +39,16 @@ func TestAddLink(t *testing.T) {
 		t.Errorf("a.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Add Link: Type: 2, Length: 44, Reserved: 0x0, " +
 		"Reason Code: 0 (unknown), Reply: false, Rejection: false, " +
 		"Reserved: 0x0, Sender MAC: 98:03:9b:ab:cd:ef, " +
 		"Sender GID: fe80::9a03:9bff:feab:cdef, " +
 		"Sender QP: 0, Link: 0, Reserved: 0x0, MTU: 0 (reserved), " +
 		"Initial PSN: 0, Reserved: 0x00000000000000000000\n"
-	got = a.reserved()
+	got = a.Reserved()
 	if got != want {
-		t.Errorf("a.reserved() = %s; want %s", got, want)
+		t.Errorf("a.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

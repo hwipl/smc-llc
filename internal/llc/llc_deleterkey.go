@@ -89,9 +89,9 @@ func (d *deleteRKey) String() string {
 		d.errorMask, rkeys)
 }
 
-// reserved converts the delete RKey message to a string including reserved
+// Reserved converts the delete RKey message to a string including reserved
 // fields
-func (d *deleteRKey) reserved() string {
+func (d *deleteRKey) Reserved() string {
 	var rkeys string
 
 	for i := range d.rkeys {

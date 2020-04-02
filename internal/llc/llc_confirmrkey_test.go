@@ -41,7 +41,7 @@ func TestConfirmRKey(t *testing.T) {
 		t.Errorf("c.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Confirm RKey: Type: 6, Length: 44, Reserved: 0x0, " +
 		"Reply: false, Reserved: 0x0, Negative Response: false, " +
 		"Configuration Retry: false, Reserved: 0x0, " +
@@ -50,9 +50,9 @@ func TestConfirmRKey(t *testing.T) {
 		"[Link: 0, RKey: 0, Virtual Address: 0x0], " +
 		"Other Link RMB 2: [Link: 0, RKey: 0, " +
 		"Virtual Address: 0x0], Reserved: 0x0\n"
-	got = c.reserved()
+	got = c.Reserved()
 	if got != want {
-		t.Errorf("c.reserved() = %s; want %s", got, want)
+		t.Errorf("c.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

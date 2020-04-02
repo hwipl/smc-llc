@@ -31,13 +31,13 @@ func TestBTH(t *testing.T) {
 		t.Errorf("bth.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "BTH: OpCode: 0b100 (RC SEND Only), SE: true, M: true, " +
 		"Pad: 0, TVer: 0, PKey: 65535, FECN: false, BECN: false, " +
 		"Res: 0x0, DestQP: 263, A: true, Res: 0x0, PSN: 8071316\n"
-	got = bth.reserved()
+	got = bth.Reserved()
 	if got != want {
-		t.Errorf("bth.reserved() = %s; want %s", got, want)
+		t.Errorf("bth.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

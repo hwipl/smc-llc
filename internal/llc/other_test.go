@@ -29,11 +29,11 @@ func TestOther(t *testing.T) {
 		t.Errorf("o.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "Other Payload\n"
-	got = o.reserved()
+	got = o.Reserved()
 	if got != want {
-		t.Errorf("o.reserved() = %s; want %s", got, want)
+		t.Errorf("o.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

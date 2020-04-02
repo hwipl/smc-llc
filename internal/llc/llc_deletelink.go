@@ -92,9 +92,9 @@ func (d *deleteLink) String() string {
 		d.link, d.rsnCode)
 }
 
-// reserved converts the delete link message to a string including reserved
+// Reserved converts the delete link message to a string including reserved
 // fields
-func (d *deleteLink) reserved() string {
+func (d *deleteLink) Reserved() string {
 	dFmt := "LLC Delete Link: Type: %d, Length: %d, Reserved: %#x, " +
 		"Reply: %t, All: %t, Orderly: %t, Reserved: %#x, Link: %d, " +
 		"Reason Code: %s, Reserved: %#x\n"

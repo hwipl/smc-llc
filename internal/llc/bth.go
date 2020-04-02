@@ -258,8 +258,8 @@ func (b *bth) String() string {
 		b.fecn, b.becn, b.destQP, b.a, b.psn)
 }
 
-// reserved converts the base transport header to a string
-func (b *bth) reserved() string {
+// Reserved converts the base transport header to a string
+func (b *bth) Reserved() string {
 	bfmt := "BTH: OpCode: %s, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
 		"A: %t, Res: %#x, PSN: %d\n"

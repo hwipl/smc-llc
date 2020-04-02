@@ -73,9 +73,9 @@ func (c *confirmRKeyCont) String() string {
 		others)
 }
 
-// reserved converts the confirm RKey continuation message to a string
+// Reserved converts the confirm RKey continuation message to a string
 // including reserved fields
-func (c *confirmRKeyCont) reserved() string {
+func (c *confirmRKeyCont) Reserved() string {
 	var others string
 
 	for i := range c.otherRMBs {

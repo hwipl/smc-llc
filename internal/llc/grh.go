@@ -47,9 +47,9 @@ func (g *grh) String() string {
 		g.Length, nextHeader, g.HopLimit, g.SrcIP, g.DstIP)
 }
 
-// reserved converts the global routing header to a string including reserved
+// Reserved converts the global routing header to a string including reserved
 // fields
-func (g *grh) reserved() string {
+func (g *grh) Reserved() string {
 	return g.String()
 }
 

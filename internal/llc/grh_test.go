@@ -32,11 +32,11 @@ func TestGRH(t *testing.T) {
 		t.Errorf("grh.String() = %s; want %s", got, want)
 	}
 
-	// test reserved(), should produce same output because there are no
+	// test Reserved(), should produce same output because there are no
 	// reserved values printed
-	got = grh.reserved()
+	got = grh.Reserved()
 	if got != want {
-		t.Errorf("grh.reserved() = %s; want %s", got, want)
+		t.Errorf("grh.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

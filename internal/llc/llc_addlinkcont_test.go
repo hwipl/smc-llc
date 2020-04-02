@@ -38,15 +38,15 @@ func TestAddLinkCont(t *testing.T) {
 		t.Errorf("a.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Add Link Continuation: Type: 3, Length: 44, " +
 		"Reserved: 0x0, Reply: true, Reserved: 0x0, Link: 1, " +
 		"Number of RTokens: 1, Reserved: 0x0000, " +
 		"RKey Pair 2: [Reference RKey: 4, New RKey: 5, " +
 		"New Virtual Address: 0x6], Reserved: 0x00000000\n"
-	got = a.reserved()
+	got = a.Reserved()
 	if got != want {
-		t.Errorf("a.reserved() = %s; want %s", got, want)
+		t.Errorf("a.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()

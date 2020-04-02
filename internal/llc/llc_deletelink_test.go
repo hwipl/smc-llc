@@ -37,15 +37,15 @@ func TestDeleteLink(t *testing.T) {
 		t.Errorf("d.String() = %s; want %s", got, want)
 	}
 
-	// test reserved()
+	// test Reserved()
 	want = "LLC Delete Link: Type: 4, Length: 44, Reserved: 0x0, " +
 		"Reply: false, All: true, Orderly: true, Reserved: 0x0, " +
 		"Link: 0, Reason Code: 0 (unknown), " +
 		"Reserved: 0x0000000000000000000000000000000000000000000" +
 		"000000000000000000000000000\n"
-	got = d.reserved()
+	got = d.Reserved()
 	if got != want {
-		t.Errorf("d.reserved() = %s; want %s", got, want)
+		t.Errorf("d.Reserved() = %s; want %s", got, want)
 	}
 
 	// test hex()
