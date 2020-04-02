@@ -29,7 +29,7 @@ func (b *baseMsg) setBaseMsg(buffer []byte) {
 }
 
 // hex converts the message to a hex dump string
-func (b *baseMsg) hex() string {
+func (b *baseMsg) Hex() string {
 	return hex.Dump(b.raw)
 }
 

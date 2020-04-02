@@ -48,11 +48,11 @@ func TestDeleteLink(t *testing.T) {
 		t.Errorf("d.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = d.hex()
+	got = d.Hex()
 	if got != want {
-		t.Errorf("d.hex() = %s; want %s", got, want)
+		t.Errorf("d.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

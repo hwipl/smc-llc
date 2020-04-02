@@ -58,11 +58,11 @@ func TestCDC(t *testing.T) {
 		t.Errorf("cdc.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = cdc.hex()
+	got = cdc.Hex()
 	if got != want {
-		t.Errorf("cdc.hex() = %s; want %s", got, want)
+		t.Errorf("cdc.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

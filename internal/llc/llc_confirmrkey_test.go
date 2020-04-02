@@ -55,11 +55,11 @@ func TestConfirmRKey(t *testing.T) {
 		t.Errorf("c.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = c.hex()
+	got = c.Hex()
 	if got != want {
-		t.Errorf("c.hex() = %s; want %s", got, want)
+		t.Errorf("c.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

@@ -44,11 +44,11 @@ func TestTestLink(t *testing.T) {
 		t.Errorf("tl.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = tl.hex()
+	got = tl.Hex()
 	if got != want {
-		t.Errorf("tl.hex() = %s; want %s", got, want)
+		t.Errorf("tl.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

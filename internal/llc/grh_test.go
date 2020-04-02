@@ -39,16 +39,16 @@ func TestGRH(t *testing.T) {
 		t.Errorf("grh.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = "00000000  60 20 00 00 00 3c 1b 01  " +
 		"fe 80 00 00 00 00 00 00  |` ...<..........|\n" +
 		"00000010  9a 03 9b ff fe ab cd ef  " +
 		"fe 80 00 00 00 00 00 00  |................|\n" +
 		"00000020  9a 03 9b ff fe ab cd ef  " +
 		"                         |........|\n"
-	got = grh.hex()
+	got = grh.Hex()
 	if got != want {
-		t.Errorf("grh.hex() = %s; want %s", got, want)
+		t.Errorf("grh.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

@@ -48,7 +48,7 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 			out += p.String()
 		}
 		if showHex {
-			out += p.hex()
+			out += p.Hex()
 		}
 	}
 

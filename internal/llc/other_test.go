@@ -36,11 +36,11 @@ func TestOther(t *testing.T) {
 		t.Errorf("o.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = o.hex()
+	got = o.Hex()
 	if got != want {
-		t.Errorf("o.hex() = %s; want %s", got, want)
+		t.Errorf("o.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

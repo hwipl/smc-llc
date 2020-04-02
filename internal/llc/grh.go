@@ -53,8 +53,8 @@ func (g *grh) Reserved() string {
 	return g.String()
 }
 
-// hex returns a hex dump string of the message
-func (g *grh) hex() string {
+// Hex returns a hex dump string of the message
+func (g *grh) Hex() string {
 	return hex.Dump(g.Contents)
 }
 

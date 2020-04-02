@@ -40,11 +40,11 @@ func TestBTH(t *testing.T) {
 		t.Errorf("bth.Reserved() = %s; want %s", got, want)
 	}
 
-	// test hex()
+	// test Hex()
 	want = msgHex
-	got = bth.hex()
+	got = bth.Hex()
 	if got != want {
-		t.Errorf("bth.hex() = %s; want %s", got, want)
+		t.Errorf("bth.Hex() = %s; want %s", got, want)
 	}
 
 	// test getType()

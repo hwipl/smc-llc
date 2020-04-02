@@ -5,6 +5,6 @@ type Message interface {
 	Parse(buffer []byte)
 	String() string
 	Reserved() string
-	hex() string
+	Hex() string
 	getType() int
 }
