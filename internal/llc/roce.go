@@ -37,7 +37,7 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	roce.LLC = parseLLC(buffer)
+	roce.LLC = ParseLLC(buffer)
 
 	return &roce
 }
@@ -58,7 +58,7 @@ func ParseRoCEv2(buffer []byte) *RoCE {
 	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	roce.LLC = parseLLC(buffer)
+	roce.LLC = ParseLLC(buffer)
 
 	return &roce
 }

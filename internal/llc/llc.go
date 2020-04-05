@@ -18,8 +18,8 @@ const (
 	typeCDC             = 0xFE
 )
 
-// parseLLC parses the LLC message in buffer
-func parseLLC(buffer []byte) Message {
+// ParseLLC parses the LLC message in buffer
+func ParseLLC(buffer []byte) Message {
 	// llc messages are 44 byte long, treat other lengths as type other
 	if len(buffer) != llcMsgLen {
 		return parseOther(buffer)
