@@ -17,7 +17,7 @@ type RoCE struct {
 	ICRC []byte
 }
 
-// ParseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
+// ParseRoCEv1 parses the RoCEv1 packet in buffer
 func ParseRoCEv1(buffer []byte) *RoCE {
 	var roce RoCE
 
@@ -42,7 +42,7 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	return &roce
 }
 
-// ParseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
+// ParseRoCEv2 parses the RoCEv2 packet in buffer
 func ParseRoCEv2(buffer []byte) *RoCE {
 	var roce RoCE
 
