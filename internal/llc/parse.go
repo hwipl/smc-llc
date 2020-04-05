@@ -57,7 +57,7 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	lf := packet.LinkLayer().LinkFlow()
 	if eth.EthernetType == RoCEv1EtherType {
 		timestamp := packet.Metadata().Timestamp
-		r := parseRoCEv1(eth.Payload)
+		r := ParseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.grh.SrcIP)
 		dstIP := layers.NewIPEndpoint(r.grh.DstIP)
 		return output(showGRH, showBTH, showOther, showReserved,
