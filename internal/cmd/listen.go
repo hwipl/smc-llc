@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
-	"github.com/hwipl/smc-llc/internal/llc"
 )
 
 // listen captures packets on the network interface and parses them
@@ -38,7 +37,7 @@ func listen() {
 		pcapHandle.LinkType())
 	for packet := range packetSource.Packets() {
 		// parse packet
-		output := llc.Parse(packet, *showGRH, *showBTH, *showOther,
+		output := parse(packet, *showGRH, *showBTH, *showOther,
 			*showReserved, *showHex)
 		if output != "" {
 			fmt.Fprintf(stdout, output)

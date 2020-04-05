@@ -1,4 +1,4 @@
-package llc
+package cmd
 
 import (
 	"fmt"
@@ -6,15 +6,17 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
+
+	"github.com/hwipl/smc-llc/internal/llc"
 )
 
 // output prints the message consisting of parts
 func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
-	roce *RoCE) string {
+	roce *llc.RoCE) string {
 	// construct output string
 	var out string = ""
-	addString := func(m Message) {
+	addString := func(m llc.Message) {
 		if showReserved {
 			out += m.Reserved()
 		} else {
@@ -30,7 +32,7 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	if showBTH {
 		addString(roce.BTH)
 	}
-	if roce.LLC.GetType() != typeOther || showOther {
+	if roce.LLC.GetType() != llc.TypeOther || showOther {
 		addString(roce.LLC)
 	}
 
@@ -43,8 +45,8 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	return out
 }
 
-// Parse determines if packet is a RoCEv1 or RoCEv2 packet
-func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
+// parse determines if packet is a RoCEv1 or RoCEv2 packet
+func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	showHex bool) string {
 	// packet must be ethernet
 	ethLayer := packet.Layer(layers.LayerTypeEthernet)
@@ -55,9 +57,9 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
 	lf := packet.LinkLayer().LinkFlow()
-	if eth.EthernetType == RoCEv1EtherType {
+	if eth.EthernetType == llc.RoCEv1EtherType {
 		timestamp := packet.Metadata().Timestamp
-		r := ParseRoCEv1(eth.Payload)
+		r := llc.ParseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.GRH.SrcIP)
 		dstIP := layers.NewIPEndpoint(r.GRH.DstIP)
 		return output(showGRH, showBTH, showOther, showReserved,
@@ -71,10 +73,10 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 		return ""
 	}
 	udp, _ := udpLayer.(*layers.UDP)
-	if udp.DstPort == RoCEv2UDPPort {
+	if udp.DstPort == llc.RoCEv2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
-		r := ParseRoCEv2(udp.Payload)
+		r := llc.ParseRoCEv2(udp.Payload)
 		return output(showGRH, showBTH, showOther, showReserved,
 			showHex, timestamp, lf.Src(), lf.Dst(), nf.Src(),
 			nf.Dst(), r)
