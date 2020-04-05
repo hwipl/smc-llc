@@ -15,6 +15,17 @@ type RoCE struct {
 	icrc []byte
 }
 
+// parsePayload parses the payload in buffer to extract llc messages
+func parsePayload(buffer []byte) Message {
+	// llc messages are 44 byte long
+	if len(buffer) == llcMsgLen {
+		return parseLLC(buffer)
+	}
+
+	// other payload
+	return parseOther(buffer)
+}
+
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
 func parseRoCEv1(buffer []byte) *RoCE {
 	var roce RoCE

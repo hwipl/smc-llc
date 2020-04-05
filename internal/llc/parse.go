@@ -8,17 +8,6 @@ import (
 	"github.com/google/gopacket/layers"
 )
 
-// parsePayload parses the payload in buffer to extract llc messages
-func parsePayload(buffer []byte) Message {
-	// llc messages are 44 byte long
-	if len(buffer) == llcMsgLen {
-		return parseLLC(buffer)
-	}
-
-	// other payload
-	return parseOther(buffer)
-}
-
 // output prints the message consisting of parts
 func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
