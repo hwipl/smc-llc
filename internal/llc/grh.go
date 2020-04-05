@@ -63,8 +63,8 @@ func (g *grh) GetType() int {
 	return typeGRH
 }
 
-// parseGRH parses the global routing header in buffer
-func parseGRH(buffer []byte) *grh {
+// ParseGRH parses the global routing header in buffer
+func ParseGRH(buffer []byte) *grh {
 	var g grh
 	g.Parse(buffer)
 	return &g

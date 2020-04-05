@@ -36,7 +36,7 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	roce.Type = "RoCEv1"
 
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	roce.GRH = parseGRH(buffer[:grhLen])
+	roce.GRH = ParseGRH(buffer[:grhLen])
 	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes

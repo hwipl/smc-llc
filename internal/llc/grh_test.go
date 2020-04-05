@@ -20,7 +20,7 @@ func TestGRH(t *testing.T) {
 	}
 
 	// parse message
-	grh := parseGRH(bytes)
+	grh := ParseGRH(bytes)
 
 	// test String()
 	want = "GRH: Version: 6, Traffic Class: 2, Flow Label: 0, " +
