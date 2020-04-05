@@ -11,28 +11,27 @@ import (
 )
 
 // output prints the message consisting of parts
-func output(showGRH, showBTH, showOther, showReserved, showHex bool,
-	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
-	roce *llc.RoCE) string {
+func output(timestamp time.Time, srcMAC, dstMAC, srcIP,
+	dstIP gopacket.Endpoint, roce *llc.RoCE) string {
 	// construct output string
 	var out string = ""
 	addString := func(m llc.Message) {
-		if showReserved {
+		if *showReserved {
 			out += m.Reserved()
 		} else {
 			out += m.String()
 		}
-		if showHex {
+		if *showHex {
 			out += m.Hex()
 		}
 	}
-	if roce.GRH != nil && showGRH {
+	if roce.GRH != nil && *showGRH {
 		addString(roce.GRH)
 	}
-	if showBTH {
+	if *showBTH {
 		addString(roce.BTH)
 	}
-	if roce.LLC.GetType() != llc.TypeOther || showOther {
+	if roce.LLC.GetType() != llc.TypeOther || *showOther {
 		addString(roce.LLC)
 	}
 
@@ -62,9 +61,7 @@ func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 		r := llc.ParseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.GRH.SrcIP)
 		dstIP := layers.NewIPEndpoint(r.GRH.DstIP)
-		return output(showGRH, showBTH, showOther, showReserved,
-			showHex, timestamp, lf.Src(), lf.Dst(), srcIP, dstIP,
-			r)
+		return output(timestamp, lf.Src(), lf.Dst(), srcIP, dstIP, r)
 	}
 
 	// RoCEv2
@@ -77,8 +74,7 @@ func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
 		r := llc.ParseRoCEv2(udp.Payload)
-		return output(showGRH, showBTH, showOther, showReserved,
-			showHex, timestamp, lf.Src(), lf.Dst(), nf.Src(),
+		return output(timestamp, lf.Src(), lf.Dst(), nf.Src(),
 			nf.Dst(), r)
 	}
 	return ""
