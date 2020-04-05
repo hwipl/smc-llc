@@ -20,7 +20,7 @@ func TestBTH(t *testing.T) {
 	}
 
 	// parse message
-	bth := parseBTH(bytes)
+	bth := ParseBTH(bytes)
 
 	// test String()
 	want = "BTH: OpCode: 0b100 (RC SEND Only), SE: true, M: true, " +

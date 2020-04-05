@@ -9,11 +9,11 @@ const (
 	// internal message type
 	typeBTH = 0x103
 
-	// next header value in grh
-	bthNextHeader = 0x1B
+	// BTHNextHeader is the next header value in the GRH
+	BTHNextHeader = 0x1B
 
-	// length of bth
-	bthLen = 12
+	// BTHLen is the length of the bth
+	BTHLen = 12
 )
 
 // opcode stores the bth opcode
@@ -175,8 +175,8 @@ func (o opcode) String() string {
 	return fmt.Sprintf("%#b (%s)", o, op)
 }
 
-// bth stores an ib base transport header
-type bth struct {
+// BTH stores an ib base transport header
+type BTH struct {
 	baseMsg
 	opcode opcode
 	se     bool
@@ -194,11 +194,11 @@ type bth struct {
 }
 
 // Parse fills the bth fields from the base transport header in buffer
-func (b *bth) Parse(buffer []byte) {
+func (b *BTH) Parse(buffer []byte) {
 	// save raw message bytes, set internal type and length
 	b.setRaw(buffer)
 	b.typ = typeBTH
-	b.length = bthLen
+	b.length = BTHLen
 
 	// opcode is 1 byte
 	b.opcode = opcode(buffer[0])
@@ -251,7 +251,7 @@ func (b *bth) Parse(buffer []byte) {
 }
 
 // String converts the base transport header to a string
-func (b *bth) String() string {
+func (b *BTH) String() string {
 	bfmt := "BTH: OpCode: %s, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, DestQP: %d, A: %t, PSN: %d\n"
 	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
@@ -259,7 +259,7 @@ func (b *bth) String() string {
 }
 
 // Reserved converts the base transport header to a string
-func (b *bth) Reserved() string {
+func (b *BTH) Reserved() string {
 	bfmt := "BTH: OpCode: %s, SE: %t, M: %t, Pad: %d, TVer: %d, " +
 		"PKey: %d, FECN: %t, BECN: %t, Res: %#x, DestQP: %d, " +
 		"A: %t, Res: %#x, PSN: %d\n"
@@ -267,9 +267,9 @@ func (b *bth) Reserved() string {
 		b.fecn, b.becn, b.res1, b.destQP, b.a, b.res2, b.psn)
 }
 
-// parseBTH parses the BTH header in buffer
-func parseBTH(buffer []byte) *bth {
-	var b bth
+// ParseBTH parses the BTH header in buffer
+func ParseBTH(buffer []byte) *BTH {
+	var b BTH
 	b.Parse(buffer)
 	return &b
 }

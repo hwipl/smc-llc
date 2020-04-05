@@ -12,7 +12,7 @@ const (
 type RoCE struct {
 	Type string
 	GRH  *GRH
-	BTH  *bth
+	BTH  *BTH
 	LLC  Message
 	ICRC []byte
 }
@@ -40,8 +40,8 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	buffer = buffer[GRHLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
-	roce.BTH = parseBTH(buffer[:bthLen])
-	buffer = buffer[bthLen:]
+	roce.BTH = ParseBTH(buffer[:BTHLen])
+	buffer = buffer[BTHLen:]
 
 	// invariant CRC (ICRC) is 4 bytes at the end of the message
 	roce.ICRC = buffer[len(buffer)-4:]
@@ -61,8 +61,8 @@ func ParseRoCEv2(buffer []byte) *RoCE {
 	roce.Type = "RoCEv2"
 
 	// Base Transport Header (BTH) is 12 bytes
-	roce.BTH = parseBTH(buffer[:bthLen])
-	buffer = buffer[bthLen:]
+	roce.BTH = ParseBTH(buffer[:BTHLen])
+	buffer = buffer[BTHLen:]
 
 	// invariant CRC (ICRC) is 4 bytes at the end of the message
 	roce.ICRC = buffer[len(buffer)-4:]

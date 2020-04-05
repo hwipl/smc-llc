@@ -36,7 +36,7 @@ func (g *GRH) Parse(buffer []byte) {
 func (g *GRH) String() string {
 	// rename nextHeader to "BTH" if it is correct (== 0x1B)
 	nextHeader := "BTH"
-	if g.NextHeader != bthNextHeader {
+	if g.NextHeader != BTHNextHeader {
 		// otherwise just use what gopacket thinks it is
 		nextHeader = g.NextHeader.String()
 	}
