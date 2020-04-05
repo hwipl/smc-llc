@@ -55,7 +55,7 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
 	lf := packet.LinkLayer().LinkFlow()
-	if eth.EthernetType == rocev1EtherType {
+	if eth.EthernetType == RoCEv1EtherType {
 		timestamp := packet.Metadata().Timestamp
 		r := parseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.grh.SrcIP)
@@ -71,7 +71,7 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 		return ""
 	}
 	udp, _ := udpLayer.(*layers.UDP)
-	if udp.DstPort == rocev2UDPPort {
+	if udp.DstPort == RoCEv2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
 		r := parseRoCEv2(udp.Payload)

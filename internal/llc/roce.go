@@ -1,9 +1,11 @@
 package llc
 
 const (
-	// roce
-	rocev1EtherType = 0x8915
-	rocev2UDPPort   = 4791
+	// RoCEv1EtherType is the Ethernet Type used for RoCEv1
+	RoCEv1EtherType = 0x8915
+
+	// RoCEv2UDPPort is the UDP port number used for RoCEv2
+	RoCEv2UDPPort = 4791
 )
 
 // RoCE stores a roce message
