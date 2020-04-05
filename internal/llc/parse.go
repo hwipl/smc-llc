@@ -21,35 +21,34 @@ func parsePayload(buffer []byte) Message {
 
 // output prints the message consisting of parts
 func output(showGRH, showBTH, showOther, showReserved, showHex bool,
-	roceType string, timestamp time.Time,
-	srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
-	parts []Message) string {
+	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
+	roce *RoCE) string {
 	// construct output string
 	var out string = ""
-	for _, p := range parts {
-		if p.GetType() == typeGRH && !showGRH {
-			continue
-		}
-		if p.GetType() == typeBTH && !showBTH {
-			continue
-		}
-		if p.GetType() == typeOther && !showOther {
-			continue
-		}
+	addString := func(m Message) {
 		if showReserved {
-			out += p.Reserved()
+			out += m.Reserved()
 		} else {
-			out += p.String()
+			out += m.String()
 		}
 		if showHex {
-			out += p.Hex()
+			out += m.Hex()
 		}
+	}
+	if roce.grh != nil && showGRH {
+		addString(roce.grh)
+	}
+	if showBTH {
+		addString(roce.bth)
+	}
+	if roce.llc.GetType() != typeOther || showOther {
+		addString(roce.llc)
 	}
 
 	// if there is output, add header and actually print it
 	if out != "" {
 		out = fmt.Sprintf("%s %s %s -> %s (%s -> %s):\n%s",
-			timestamp.Format("15:04:05.000000"), roceType, srcIP,
+			timestamp.Format("15:04:05.000000"), roce.typ, srcIP,
 			dstIP, srcMAC, dstMAC, out)
 	}
 	return out
@@ -69,8 +68,12 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	lf := packet.LinkLayer().LinkFlow()
 	if eth.EthernetType == rocev1EtherType {
 		timestamp := packet.Metadata().Timestamp
-		return parseRoCEv1(showGRH, showBTH, showOther, showReserved,
-			showHex, timestamp, lf.Src(), lf.Dst(), eth.Payload)
+		r := parseRoCEv1(eth.Payload)
+		srcIP := layers.NewIPEndpoint(r.grh.SrcIP)
+		dstIP := layers.NewIPEndpoint(r.grh.DstIP)
+		return output(showGRH, showBTH, showOther, showReserved,
+			showHex, timestamp, lf.Src(), lf.Dst(), srcIP, dstIP,
+			r)
 	}
 
 	// RoCEv2
@@ -82,9 +85,10 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	if udp.DstPort == rocev2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
-		return parseRoCEv2(showGRH, showBTH, showOther, showReserved,
+		r := parseRoCEv2(udp.Payload)
+		return output(showGRH, showBTH, showOther, showReserved,
 			showHex, timestamp, lf.Src(), lf.Dst(), nf.Src(),
-			nf.Dst(), udp.Payload)
+			nf.Dst(), r)
 	}
 	return ""
 }

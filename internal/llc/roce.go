@@ -1,67 +1,62 @@
 package llc
 
-import (
-	"time"
-
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-)
-
 const (
 	// roce
 	rocev1EtherType = 0x8915
 	rocev2UDPPort   = 4791
 )
 
+// RoCE stores a roce message
+type RoCE struct {
+	typ  string
+	grh  *grh
+	bth  *bth
+	llc  Message
+	icrc []byte
+}
+
 // parseRoCEv1 parses the RoCEv1 packet in buffer to extract the payload
-func parseRoCEv1(showGRH, showBTH, showOther, showReserved, showHex bool,
-	timestamp time.Time, srcMAC, dstMAC gopacket.Endpoint,
-	buffer []byte) string {
-	var parts []Message
+func parseRoCEv1(buffer []byte) *RoCE {
+	var roce RoCE
+
+	// set type string
+	roce.typ = "RoCEv1"
 
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	grh := parseGRH(buffer[:grhLen])
-	parts = append(parts, grh)
-	srcIP := layers.NewIPEndpoint(grh.SrcIP)
-	dstIP := layers.NewIPEndpoint(grh.DstIP)
+	roce.grh = parseGRH(buffer[:grhLen])
 	buffer = buffer[grhLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
-	bth := parseBTH(buffer[:bthLen])
-	parts = append(parts, bth)
-	payload := buffer[bthLen:]
+	roce.bth = parseBTH(buffer[:bthLen])
+	buffer = buffer[bthLen:]
 
-	// invariant CRC (ICRC) is 4 bytes
-	payload = payload[:len(payload)-4]
+	// invariant CRC (ICRC) is 4 bytes at the end of the message
+	roce.icrc = buffer[len(buffer)-4:]
+	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	llc := parsePayload(payload)
-	parts = append(parts, llc)
+	roce.llc = parsePayload(buffer)
 
-	// output message
-	return output(showGRH, showBTH, showOther, showReserved, showHex,
-		"RoCEv1", timestamp, srcMAC, dstMAC, srcIP, dstIP, parts)
+	return &roce
 }
 
 // parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
-func parseRoCEv2(showGRH, showBTH, showOther, showReserved, showHex bool,
-	timestamp time.Time, srcMAC, dstMAC, srcIP, dstIP gopacket.Endpoint,
-	buffer []byte) string {
-	var parts []Message
+func parseRoCEv2(buffer []byte) *RoCE {
+	var roce RoCE
+
+	// set type string
+	roce.typ = "RoCEv2"
 
 	// Base Transport Header (BTH) is 12 bytes
-	bth := parseBTH(buffer[:bthLen])
-	parts = append(parts, bth)
-	payload := buffer[bthLen:]
+	roce.bth = parseBTH(buffer[:bthLen])
+	buffer = buffer[bthLen:]
 
-	// invariant CRC (ICRC) is 4 bytes
-	payload = payload[:len(payload)-4]
+	// invariant CRC (ICRC) is 4 bytes at the end of the message
+	roce.icrc = buffer[len(buffer)-4:]
+	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	llc := parsePayload(payload)
-	parts = append(parts, llc)
+	roce.llc = parsePayload(buffer)
 
-	// output message
-	return output(showGRH, showBTH, showOther, showReserved, showHex,
-		"RoCEv2", timestamp, srcMAC, dstMAC, srcIP, dstIP, parts)
+	return &roce
 }
