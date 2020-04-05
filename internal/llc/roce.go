@@ -11,7 +11,7 @@ const (
 // RoCE stores a roce message
 type RoCE struct {
 	Type string
-	GRH  *grh
+	GRH  *GRH
 	BTH  *bth
 	LLC  Message
 	ICRC []byte
@@ -36,8 +36,8 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	roce.Type = "RoCEv1"
 
 	// Global Routing Header (GRH) is 40 bytes (it's an IPv6 header)
-	roce.GRH = ParseGRH(buffer[:grhLen])
-	buffer = buffer[grhLen:]
+	roce.GRH = ParseGRH(buffer[:GRHLen])
+	buffer = buffer[GRHLen:]
 
 	// Base Transport Header (BTH) is 12 bytes
 	roce.BTH = parseBTH(buffer[:bthLen])

@@ -12,28 +12,28 @@ const (
 	// internal message type
 	typeGRH = 0x102
 
-	// length of grh
-	grhLen = 40
+	// GRHLen is the length of the GRH
+	GRHLen = 40
 )
 
-// grh stores an ib global routing header
-type grh layers.IPv6
+// GRH stores an ib global routing header
+type GRH layers.IPv6
 
 // Parse fills the grh fields from the global routing header in buffer
-func (g *grh) Parse(buffer []byte) {
+func (g *GRH) Parse(buffer []byte) {
 	// parse buffer as IPv6 packet
 	ipv6Packet := gopacket.NewPacket(buffer, layers.LayerTypeIPv6,
 		gopacket.Default)
 	ipv6Layer := ipv6Packet.Layer(layers.LayerTypeIPv6)
 	if ipv6Layer != nil {
 		ipv6, _ := ipv6Layer.(*layers.IPv6)
-		*g = grh(*ipv6)
+		*g = GRH(*ipv6)
 	}
 
 }
 
 // String converts the global routing header to a string
-func (g *grh) String() string {
+func (g *GRH) String() string {
 	// rename nextHeader to "BTH" if it is correct (== 0x1B)
 	nextHeader := "BTH"
 	if g.NextHeader != bthNextHeader {
@@ -49,23 +49,23 @@ func (g *grh) String() string {
 
 // Reserved converts the global routing header to a string including reserved
 // fields
-func (g *grh) Reserved() string {
+func (g *GRH) Reserved() string {
 	return g.String()
 }
 
 // Hex returns a hex dump string of the message
-func (g *grh) Hex() string {
+func (g *GRH) Hex() string {
 	return hex.Dump(g.Contents)
 }
 
 // GetType returns the type of the message
-func (g *grh) GetType() int {
+func (g *GRH) GetType() int {
 	return typeGRH
 }
 
 // ParseGRH parses the global routing header in buffer
-func ParseGRH(buffer []byte) *grh {
-	var g grh
+func ParseGRH(buffer []byte) *GRH {
+	var g GRH
 	g.Parse(buffer)
 	return &g
 }
