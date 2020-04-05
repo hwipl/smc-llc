@@ -28,7 +28,7 @@ func (b *baseMsg) setBaseMsg(buffer []byte) {
 	b.length = int(buffer[0])
 }
 
-// hex converts the message to a hex dump string
+// Hex converts the message to a hex dump string
 func (b *baseMsg) Hex() string {
 	return hex.Dump(b.raw)
 }

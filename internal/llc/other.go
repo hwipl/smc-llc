@@ -1,7 +1,7 @@
 package llc
 
 const (
-	// internal message type for other/non-LLC messages
+	// TypeOther is the internal message type for other/non-LLC messages
 	TypeOther = 0x101
 )
 

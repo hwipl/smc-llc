@@ -30,7 +30,7 @@ var (
 		"use http server and set listen address (e.g.: :8000)")
 )
 
-// main entry point function
+// Run is the main entry point function
 func Run() {
 	flag.Parse()
 	if *httpListen != "" {
