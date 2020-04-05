@@ -8,11 +8,12 @@ import (
 	"github.com/google/gopacket/layers"
 
 	"github.com/hwipl/smc-llc/internal/llc"
+	"github.com/hwipl/smc-llc/internal/roce"
 )
 
 // output prints the message consisting of parts
 func output(timestamp time.Time, srcMAC, dstMAC, srcIP,
-	dstIP gopacket.Endpoint, roce *llc.RoCE) string {
+	dstIP gopacket.Endpoint, roce *roce.RoCE) string {
 	// construct output string
 	var out string = ""
 	addString := func(m llc.Message) {
@@ -56,9 +57,9 @@ func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	// RoCEv1
 	eth, _ := ethLayer.(*layers.Ethernet)
 	lf := packet.LinkLayer().LinkFlow()
-	if eth.EthernetType == llc.RoCEv1EtherType {
+	if eth.EthernetType == roce.RoCEv1EtherType {
 		timestamp := packet.Metadata().Timestamp
-		r := llc.ParseRoCEv1(eth.Payload)
+		r := roce.ParseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.GRH.SrcIP)
 		dstIP := layers.NewIPEndpoint(r.GRH.DstIP)
 		return output(timestamp, lf.Src(), lf.Dst(), srcIP, dstIP, r)
@@ -70,10 +71,10 @@ func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 		return ""
 	}
 	udp, _ := udpLayer.(*layers.UDP)
-	if udp.DstPort == llc.RoCEv2UDPPort {
+	if udp.DstPort == roce.RoCEv2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
-		r := llc.ParseRoCEv2(udp.Payload)
+		r := roce.ParseRoCEv2(udp.Payload)
 		return output(timestamp, lf.Src(), lf.Dst(), nf.Src(),
 			nf.Dst(), r)
 	}

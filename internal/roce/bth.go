@@ -1,7 +1,8 @@
-package llc
+package roce
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 )
 
@@ -177,7 +178,7 @@ func (o opcode) String() string {
 
 // BTH stores an ib base transport header
 type BTH struct {
-	baseMsg
+	raw    []byte
 	opcode opcode
 	se     bool
 	m      bool
@@ -196,9 +197,8 @@ type BTH struct {
 // Parse fills the bth fields from the base transport header in buffer
 func (b *BTH) Parse(buffer []byte) {
 	// save raw message bytes, set internal type and length
-	b.setRaw(buffer)
-	b.typ = typeBTH
-	b.length = BTHLen
+	b.raw = make([]byte, len(buffer))
+	copy(b.raw[:], buffer[:])
 
 	// opcode is 1 byte
 	b.opcode = opcode(buffer[0])
@@ -265,6 +265,16 @@ func (b *BTH) Reserved() string {
 		"A: %t, Res: %#x, PSN: %d\n"
 	return fmt.Sprintf(bfmt, b.opcode, b.se, b.m, b.pad, b.tver, b.pkey,
 		b.fecn, b.becn, b.res1, b.destQP, b.a, b.res2, b.psn)
+}
+
+// Hex converts the message to a hex dump string
+func (b *BTH) Hex() string {
+	return hex.Dump(b.raw)
+}
+
+// GetType returns the type of the message
+func (b *BTH) GetType() int {
+	return typeBTH
 }
 
 // ParseBTH parses the BTH header in buffer

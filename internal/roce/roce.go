@@ -1,4 +1,6 @@
-package llc
+package roce
+
+import "github.com/hwipl/smc-llc/internal/llc"
 
 const (
 	// RoCEv1EtherType is the Ethernet Type used for RoCEv1
@@ -13,7 +15,7 @@ type RoCE struct {
 	Type string
 	GRH  *GRH
 	BTH  *BTH
-	LLC  Message
+	LLC  llc.Message
 	ICRC []byte
 }
 
@@ -37,7 +39,7 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	roce.LLC = ParseLLC(buffer)
+	roce.LLC = llc.ParseLLC(buffer)
 
 	return &roce
 }
@@ -58,7 +60,7 @@ func ParseRoCEv2(buffer []byte) *RoCE {
 	buffer = buffer[:len(buffer)-4]
 
 	// parse payload
-	roce.LLC = ParseLLC(buffer)
+	roce.LLC = llc.ParseLLC(buffer)
 
 	return &roce
 }
