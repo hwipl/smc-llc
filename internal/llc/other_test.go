@@ -44,7 +44,7 @@ func TestOther(t *testing.T) {
 	}
 
 	// test GetType()
-	wantType := typeOther
+	wantType := TypeOther
 	gotType := o.GetType()
 	if gotType != wantType {
 		t.Errorf("o.GetType() = %d; want %d", gotType, wantType)

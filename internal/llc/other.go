@@ -2,7 +2,7 @@ package llc
 
 const (
 	// internal message type for other/non-LLC messages
-	typeOther = 0x101
+	TypeOther = 0x101
 )
 
 // other stores an other message
@@ -13,7 +13,7 @@ type other struct {
 // Parse fills the other fields from the other message in buffer
 func (o *other) Parse(buffer []byte) {
 	o.setRaw(buffer)
-	o.typ = typeOther
+	o.typ = TypeOther
 	o.length = len(buffer)
 }
 
