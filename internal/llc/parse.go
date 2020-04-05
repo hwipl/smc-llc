@@ -74,7 +74,7 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	if udp.DstPort == RoCEv2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
-		r := parseRoCEv2(udp.Payload)
+		r := ParseRoCEv2(udp.Payload)
 		return output(showGRH, showBTH, showOther, showReserved,
 			showHex, timestamp, lf.Src(), lf.Dst(), nf.Src(),
 			nf.Dst(), r)

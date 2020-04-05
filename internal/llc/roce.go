@@ -53,8 +53,8 @@ func ParseRoCEv1(buffer []byte) *RoCE {
 	return &roce
 }
 
-// parseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
-func parseRoCEv2(buffer []byte) *RoCE {
+// ParseRoCEv2 parses the RoCEv2 packet in buffer to extract the payload
+func ParseRoCEv2(buffer []byte) *RoCE {
 	var roce RoCE
 
 	// set type string
