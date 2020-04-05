@@ -20,6 +20,11 @@ const (
 
 // parseLLC parses the LLC message in buffer
 func parseLLC(buffer []byte) Message {
+	// llc messages are 44 byte long, treat other lengths as type other
+	if len(buffer) != llcMsgLen {
+		return parseOther(buffer)
+	}
+
 	switch buffer[0] {
 	case typeConfirmLink:
 		return parseConfirm(buffer)
