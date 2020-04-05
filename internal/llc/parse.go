@@ -24,20 +24,20 @@ func output(showGRH, showBTH, showOther, showReserved, showHex bool,
 			out += m.Hex()
 		}
 	}
-	if roce.grh != nil && showGRH {
-		addString(roce.grh)
+	if roce.GRH != nil && showGRH {
+		addString(roce.GRH)
 	}
 	if showBTH {
-		addString(roce.bth)
+		addString(roce.BTH)
 	}
-	if roce.llc.GetType() != typeOther || showOther {
-		addString(roce.llc)
+	if roce.LLC.GetType() != typeOther || showOther {
+		addString(roce.LLC)
 	}
 
 	// if there is output, add header and actually print it
 	if out != "" {
 		out = fmt.Sprintf("%s %s %s -> %s (%s -> %s):\n%s",
-			timestamp.Format("15:04:05.000000"), roce.typ, srcIP,
+			timestamp.Format("15:04:05.000000"), roce.Type, srcIP,
 			dstIP, srcMAC, dstMAC, out)
 	}
 	return out
@@ -58,8 +58,8 @@ func Parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
 	if eth.EthernetType == RoCEv1EtherType {
 		timestamp := packet.Metadata().Timestamp
 		r := ParseRoCEv1(eth.Payload)
-		srcIP := layers.NewIPEndpoint(r.grh.SrcIP)
-		dstIP := layers.NewIPEndpoint(r.grh.DstIP)
+		srcIP := layers.NewIPEndpoint(r.GRH.SrcIP)
+		dstIP := layers.NewIPEndpoint(r.GRH.DstIP)
 		return output(showGRH, showBTH, showOther, showReserved,
 			showHex, timestamp, lf.Src(), lf.Dst(), srcIP, dstIP,
 			r)
