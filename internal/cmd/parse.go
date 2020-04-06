@@ -7,8 +7,8 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 
+	"github.com/hwipl/smc-go/pkg/llc"
 	"github.com/hwipl/smc-go/pkg/roce"
-	"github.com/hwipl/smc-llc/internal/llc"
 )
 
 // output prints the message consisting of parts
