@@ -37,8 +37,7 @@ func listen() {
 		pcapHandle.LinkType())
 	for packet := range packetSource.Packets() {
 		// parse packet
-		output := parse(packet, *showGRH, *showBTH, *showOther,
-			*showReserved, *showHex)
+		output := parse(packet)
 		if output != "" {
 			fmt.Fprintf(stdout, output)
 		}

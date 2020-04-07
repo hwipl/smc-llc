@@ -45,9 +45,9 @@ func output(timestamp time.Time, srcMAC, dstMAC, srcIP,
 	return out
 }
 
-// parse determines if packet is a RoCEv1 or RoCEv2 packet
-func parse(packet gopacket.Packet, showGRH, showBTH, showOther, showReserved,
-	showHex bool) string {
+// parse determines if packet is a RoCEv1 or RoCEv2 packet, parses it and
+// returns an output string
+func parse(packet gopacket.Packet) string {
 	// packet must be ethernet
 	ethLayer := packet.Layer(layers.LayerTypeEthernet)
 	if ethLayer == nil {
