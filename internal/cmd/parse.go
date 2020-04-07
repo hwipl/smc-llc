@@ -1,57 +1,19 @@
 package cmd
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 
-	"github.com/hwipl/smc-go/pkg/llc"
 	"github.com/hwipl/smc-go/pkg/roce"
 )
 
-// output prints the message consisting of parts
-func output(timestamp time.Time, srcMAC, dstMAC, srcIP,
-	dstIP gopacket.Endpoint, roce *roce.RoCE) string {
-	// construct output string
-	var out string = ""
-	addString := func(m llc.Message) {
-		if *showReserved {
-			out += m.Reserved()
-		} else {
-			out += m.String()
-		}
-		if *showHex {
-			out += m.Hex()
-		}
-	}
-	if roce.GRH != nil && *showGRH {
-		addString(roce.GRH)
-	}
-	if *showBTH {
-		addString(roce.BTH)
-	}
-	if roce.LLC.GetType() != llc.TypeOther || *showOther {
-		addString(roce.LLC)
-	}
-
-	// if there is output, add header and actually print it
-	if out != "" {
-		out = fmt.Sprintf("%s %s %s -> %s (%s -> %s):\n%s",
-			timestamp.Format("15:04:05.000000"), roce.Type, srcIP,
-			dstIP, srcMAC, dstMAC, out)
-	}
-	return out
-}
-
-// parse determines if packet is a RoCEv1 or RoCEv2 packet, parses it and
-// returns an output string
-func parse(packet gopacket.Packet) string {
+// parse determines if packet is a RoCEv1 or RoCEv2 packet, parses it, and
+// prints it
+func parse(packet gopacket.Packet) {
 	// packet must be ethernet
 	ethLayer := packet.Layer(layers.LayerTypeEthernet)
 	if ethLayer == nil {
-		return ""
+		return
 	}
 
 	// RoCEv1
@@ -62,21 +24,20 @@ func parse(packet gopacket.Packet) string {
 		r := roce.ParseRoCEv1(eth.Payload)
 		srcIP := layers.NewIPEndpoint(r.GRH.SrcIP)
 		dstIP := layers.NewIPEndpoint(r.GRH.DstIP)
-		return output(timestamp, lf.Src(), lf.Dst(), srcIP, dstIP, r)
+		printLLC(timestamp, lf.Src(), lf.Dst(), srcIP, dstIP, r)
 	}
 
 	// RoCEv2
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	if udpLayer == nil {
-		return ""
+		return
 	}
 	udp, _ := udpLayer.(*layers.UDP)
 	if udp.DstPort == roce.RoCEv2UDPPort {
 		nf := packet.NetworkLayer().NetworkFlow()
 		timestamp := packet.Metadata().Timestamp
 		r := roce.ParseRoCEv2(udp.Payload)
-		return output(timestamp, lf.Src(), lf.Dst(), nf.Src(),
-			nf.Dst(), r)
+		printLLC(timestamp, lf.Src(), lf.Dst(), nf.Src(), nf.Dst(), r)
 	}
-	return ""
+	return
 }

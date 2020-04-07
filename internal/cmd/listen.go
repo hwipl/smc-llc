@@ -36,10 +36,7 @@ func listen() {
 	packetSource := gopacket.NewPacketSource(pcapHandle,
 		pcapHandle.LinkType())
 	for packet := range packetSource.Packets() {
-		// parse packet
-		output := parse(packet)
-		if output != "" {
-			fmt.Fprintf(stdout, output)
-		}
+		// parse/handle packet
+		parse(packet)
 	}
 }
