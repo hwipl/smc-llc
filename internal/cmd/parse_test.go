@@ -51,6 +51,65 @@ func createRoCEv1Packet(payload []byte) []byte {
 	return buf.Bytes()
 }
 
+func createRoCEv2Packet(payload []byte) []byte {
+	var err error
+
+	// prepare creation of packet
+	opts := gopacket.SerializeOptions{
+		FixLengths:       true,
+		ComputeChecksums: true,
+	}
+
+	// create ethernet header
+	srcMAC, err := net.ParseMAC("00:00:00:00:00:00")
+	dstMAC := srcMAC
+	if err != nil {
+		log.Fatal(err)
+	}
+	eth := layers.Ethernet{
+		SrcMAC:       srcMAC,
+		DstMAC:       dstMAC,
+		EthernetType: layers.EthernetTypeIPv4,
+	}
+
+	// create ip header
+	srcIP := net.ParseIP("127.0.0.1")
+	dstIP := srcIP
+	ip := layers.IPv4{
+		Version:  4,
+		Flags:    layers.IPv4DontFragment,
+		Id:       1,
+		TTL:      64,
+		Protocol: layers.IPProtocolUDP,
+		SrcIP:    srcIP,
+		DstIP:    dstIP,
+	}
+	// create udp header
+	udp := layers.UDP{
+		SrcPort: roce.RoCEv2UDPPort,
+		DstPort: roce.RoCEv2UDPPort,
+		Length:  uint16(len(payload)),
+	}
+	udp.SetNetworkLayerForChecksum(&ip)
+
+	// serialize packet to buffer
+	buf := gopacket.NewSerializeBuffer()
+	if payload != nil {
+		// with payload
+		pl := gopacket.Payload(payload)
+		err = gopacket.SerializeLayers(buf, opts, &eth, &ip, &udp,
+			pl)
+	} else {
+		// without payload
+		err = gopacket.SerializeLayers(buf, opts, &eth, &ip, &udp)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return buf.Bytes()
+}
+
 func TestParse(t *testing.T) {
 	var msg, want, got string
 
@@ -100,6 +159,33 @@ func TestParse(t *testing.T) {
 	want = "00:00:00.000000 RoCEv1 fe80::9a03:9bff:feab:cdef -> " +
 		"fe80::9a03:9bff:feab:cdef (00:00:00:00:00:00 -> " +
 		"00:00:00:00:00:00):\n" +
+		"LLC Confirm RKey: Type: 6, Length: 44, Reply: false, " +
+		"Negative Response: false, Configuration Retry: false, " +
+		"Number of Tokens: 0, This RKey: 5469, " +
+		"This VAddr: 0xeef4d0000, Other Link RMB 1: [Link: 0, " +
+		"RKey: 0, Virtual Address: 0x0], Other Link RMB 2: " +
+		"[Link: 0, RKey: 0, Virtual Address: 0x0]\n"
+	got = buf.String()
+
+	if got != want {
+		t.Errorf("got = %s; want %s", got, want)
+	}
+
+	// reset buffer
+	buf.Reset()
+
+	// create rocev2 packet
+	var payloadv2 []byte
+	payloadv2 = append(payloadv2, bth...)
+	payloadv2 = append(payloadv2, llc...)
+	payloadv2 = append(payloadv2, crc...)
+	rocev2 := createRoCEv2Packet(payloadv2)
+	parse(gopacket.NewPacket(rocev2, layers.LayerTypeEthernet,
+		gopacket.Default))
+
+	// check result
+	want = "00:00:00.000000 RoCEv2 127.0.0.1 -> 127.0.0.1 " +
+		"(00:00:00:00:00:00 -> 00:00:00:00:00:00):\n" +
 		"LLC Confirm RKey: Type: 6, Length: 44, Reply: false, " +
 		"Negative Response: false, Configuration Retry: false, " +
 		"Number of Tokens: 0, This RKey: 5469, " +
