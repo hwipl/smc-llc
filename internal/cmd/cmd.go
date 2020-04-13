@@ -28,12 +28,12 @@ var (
 		"set pcap packet filter to `filter` (e.g.: \"not port 22\")")
 
 	// display flags
-	showGRH   = flag.Bool("with-grh", false, "show GRH of messages")
-	showBTH   = flag.Bool("with-bth", false, "show BTH of messages")
-	showHex   = flag.Bool("with-hex", false, "show hex dumps of messages")
-	showOther = flag.Bool("with-other", false,
+	showGRH   = flag.Bool("show-grh", false, "show GRH of messages")
+	showBTH   = flag.Bool("show-bth", false, "show BTH of messages")
+	showHex   = flag.Bool("show-hex", false, "show hex dumps of messages")
+	showOther = flag.Bool("show-other", false,
 		"show non-LLC/CDC messages")
-	showReserved = flag.Bool("with-reserved", false,
+	showReserved = flag.Bool("show-reserved", false,
 		"show reserved message fields")
 	showTimestamps = flag.Bool("show-timestamps", true,
 		"show timestamps of messages")
