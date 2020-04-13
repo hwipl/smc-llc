@@ -70,8 +70,24 @@ func listen() {
 	fmt.Fprintln(stdout, startText)
 	packetSource := gopacket.NewPacketSource(pcapHandle,
 		pcapHandle.LinkType())
-	for packet := range packetSource.Packets() {
-		// parse/handle packet
-		parse(packet)
+	packets := packetSource.Packets()
+
+	// set stop time if configured
+	stop := make(<-chan time.Time)
+	if *pcapMaxTime > 0 {
+		stop = time.After(time.Duration(*pcapMaxTime) * time.Second)
+	}
+
+	for {
+		select {
+		case packet := <-packets:
+			if packet == nil {
+				return
+			}
+			// parse/handle packet
+			parse(packet)
+		case <-stop:
+			return
+		}
 	}
 }

@@ -20,6 +20,8 @@ var (
 		"set pcap timeout to `milliseconds`")
 	pcapTimeout = flag.Int("pcap-timeout", 0,
 		"set pcap timeout to `milliseconds`")
+	pcapMaxTime = flag.Int("pcap-maxtime", 0, "set maximum capturing "+
+		"time to `seconds` (may require pcap-timeout argument)")
 	pcapFilter = flag.String("pcap-filter", "",
 		"set pcap packet filter to `filter` (e.g.: \"not port 22\")")
 
