@@ -10,24 +10,30 @@ import (
 // variable definitions
 var (
 	// pcap settings
-	pcapFile    = flag.String("f", "", "the pcap file to read")
-	pcapDevice  = flag.String("i", "eth0", "the interface to listen on")
-	pcapPromisc = flag.Bool("promisc", true, "promiscuous mode")
-	pcapSnaplen = flag.Int("snaplen", 2048, "pcap snaplen")
+	pcapFile = flag.String("f", "",
+		"read packets from a pcap file and set it to `file`")
+	pcapDevice = flag.String("i", "eth0", "read packets from "+
+		"a network interface (default) and set it to `interface`")
+	pcapPromisc = flag.Bool("promisc", true,
+		"set network interface to promiscuous mode")
+	pcapSnaplen = flag.Int("snaplen", 2048,
+		"set pcap timeout to `milliseconds`")
 
 	// display flags
-	showGRH      = flag.Bool("with-grh", false, "show GRH")
-	showBTH      = flag.Bool("with-bth", false, "show BTH")
-	showHex      = flag.Bool("with-hex", false, "show hex dumps")
-	showOther    = flag.Bool("with-other", false, "show other messages")
+	showGRH   = flag.Bool("with-grh", false, "show GRH of messages")
+	showBTH   = flag.Bool("with-bth", false, "show BTH of messages")
+	showHex   = flag.Bool("with-hex", false, "show hex dumps of messages")
+	showOther = flag.Bool("with-other", false,
+		"show non-LLC/CDC messages")
 	showReserved = flag.Bool("with-reserved", false,
 		"show reserved message fields")
 
 	// console/http output
 	stdout     io.Writer = os.Stdout
 	stderr     io.Writer = os.Stdout
-	httpListen           = flag.String("http", "",
-		"use http server and set listen address (e.g.: :8000)")
+	httpListen           = flag.String("http", "", "use http server "+
+		"output and listen on `address` "+
+		"(e.g.: :8000 or 127.0.0.1:8080)")
 )
 
 // Run is the main entry point function
