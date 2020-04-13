@@ -34,11 +34,14 @@ func printLLC(timestamp time.Time, srcMAC, dstMAC, srcIP,
 	if roce.LLC.GetType() != llc.TypeOther || *showOther {
 		addString(roce.LLC)
 	}
+	ts := ""
+	if *showTimestamps {
+		ts = timestamp.Format("15:04:05.000000 ")
+	}
 
 	// if there is output, add header and actually print it
 	if out != "" {
-		fmt.Fprintf(stdout, "%s %s %s -> %s (%s -> %s):\n%s",
-			timestamp.Format("15:04:05.000000"), roce.Type, srcIP,
-			dstIP, srcMAC, dstMAC, out)
+		fmt.Fprintf(stdout, "%s%s %s -> %s (%s -> %s):\n%s", ts,
+			roce.Type, srcIP, dstIP, srcMAC, dstMAC, out)
 	}
 }

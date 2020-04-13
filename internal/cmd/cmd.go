@@ -31,6 +31,8 @@ var (
 		"show non-LLC/CDC messages")
 	showReserved = flag.Bool("with-reserved", false,
 		"show reserved message fields")
+	showTimestamps = flag.Bool("show-timestamps", true,
+		"show timestamps of messages")
 
 	// console/http output
 	stdout     io.Writer = os.Stdout
