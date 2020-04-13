@@ -12,7 +12,7 @@ var (
 	// pcap settings
 	pcapFile = flag.String("f", "",
 		"read packets from a pcap file and set it to `file`")
-	pcapDevice = flag.String("i", "eth0", "read packets from "+
+	pcapDevice = flag.String("i", "", "read packets from "+
 		"a network interface (default) and set it to `interface`")
 	pcapPromisc = flag.Bool("promisc", true,
 		"set network interface to promiscuous mode")

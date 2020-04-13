@@ -9,6 +9,18 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
+// getFirstPcapInterface returns the first network interface found by pcap
+func getFirstPcapInterface() string {
+	ifs, err := pcap.FindAllDevs()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if len(ifs) > 0 {
+		return ifs[0].Name
+	}
+	return ""
+}
+
 // listen captures packets on the network interface and parses them
 func listen() {
 	// open pcap handle
@@ -21,6 +33,14 @@ func listen() {
 		if *pcapTimeout > 0 {
 			timeout = time.Duration(*pcapTimeout) *
 				time.Millisecond
+		}
+
+		// set interface
+		if *pcapDevice == "" {
+			*pcapDevice = getFirstPcapInterface()
+			if *pcapDevice == "" {
+				log.Fatal("No network interface found")
+			}
 		}
 
 		// open device
