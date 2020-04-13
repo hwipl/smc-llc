@@ -20,6 +20,8 @@ var (
 		"set pcap timeout to `milliseconds`")
 	pcapTimeout = flag.Int("pcap-timeout", 0,
 		"set pcap timeout to `milliseconds`")
+	pcapFilter = flag.String("pcap-filter", "",
+		"set pcap packet filter to `filter` (e.g.: \"not port 22\")")
 
 	// display flags
 	showGRH   = flag.Bool("with-grh", false, "show GRH of messages")
