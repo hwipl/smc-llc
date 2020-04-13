@@ -14,9 +14,9 @@ var (
 		"read packets from a pcap file and set it to `file`")
 	pcapDevice = flag.String("i", "", "read packets from "+
 		"a network interface (default) and set it to `interface`")
-	pcapPromisc = flag.Bool("promisc", true,
+	pcapPromisc = flag.Bool("pcap-promisc", true,
 		"set network interface to promiscuous mode")
-	pcapSnaplen = flag.Int("snaplen", 2048,
+	pcapSnaplen = flag.Int("pcap-snaplen", 2048,
 		"set pcap timeout to `milliseconds`")
 	pcapTimeout = flag.Int("pcap-timeout", 0,
 		"set pcap timeout to `milliseconds`")
