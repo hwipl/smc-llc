@@ -78,6 +78,7 @@ func listen() {
 		stop = time.After(time.Duration(*pcapMaxTime) * time.Second)
 	}
 
+	count := 0
 	for {
 		select {
 		case packet := <-packets:
@@ -86,6 +87,10 @@ func listen() {
 			}
 			// parse/handle packet
 			parse(packet)
+			count++
+			if *pcapMaxPkts > 0 && count == *pcapMaxPkts {
+				return
+			}
 		case <-stop:
 			return
 		}
