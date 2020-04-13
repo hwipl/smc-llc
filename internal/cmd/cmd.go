@@ -18,6 +18,8 @@ var (
 		"set network interface to promiscuous mode")
 	pcapSnaplen = flag.Int("snaplen", 2048,
 		"set pcap timeout to `milliseconds`")
+	pcapTimeout = flag.Int("pcap-timeout", 0,
+		"set pcap timeout to `milliseconds`")
 
 	// display flags
 	showGRH   = flag.Bool("with-grh", false, "show GRH of messages")

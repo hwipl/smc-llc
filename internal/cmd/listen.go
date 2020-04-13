@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
@@ -15,9 +16,16 @@ func listen() {
 	var pcapErr error
 	var startText string
 	if *pcapFile == "" {
+		// set pcap timeout
+		timeout := pcap.BlockForever
+		if *pcapTimeout > 0 {
+			timeout = time.Duration(*pcapTimeout) *
+				time.Millisecond
+		}
+
 		// open device
 		pcapHandle, pcapErr = pcap.OpenLive(*pcapDevice,
-			int32(*pcapSnaplen), *pcapPromisc, pcap.BlockForever)
+			int32(*pcapSnaplen), *pcapPromisc, timeout)
 		startText = fmt.Sprintf("Listening on interface %s:\n",
 			*pcapDevice)
 	} else {
