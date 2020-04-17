@@ -88,11 +88,12 @@ func TestListenPcap(t *testing.T) {
 	// test listen() with pcap file
 	var buf bytes.Buffer
 	stdout = &buf
+	log.SetOutput(&buf)
 	*pcapFile = tmpfile.Name()
 	listen()
 
 	// check results
-	want = fmt.Sprintf("Reading packets from file %s:\n\n", tmpfile.Name())
+	want = fmt.Sprintf("Reading packets from file %s:\n", tmpfile.Name())
 	want += fmt.Sprintf("%s RoCEv1 fe80::9a03:9bff:feab:cdef -> ",
 		now.Format("15:04:05.000000")) +
 		"fe80::9a03:9bff:feab:cdef (00:00:00:00:00:00 -> " +
@@ -112,7 +113,7 @@ func TestListenPcap(t *testing.T) {
 		"This VAddr: 0xeef4d0000, Other Link RMB 1: [Link: 0, " +
 		"RKey: 0, Virtual Address: 0x0], Other Link RMB 2: " +
 		"[Link: 0, RKey: 0, Virtual Address: 0x0]\n"
-	got = buf.String()
+	got = buf.String()[20:] // ignore date and time
 	if got != want {
 		t.Errorf("got = %s; want %s", got, want)
 	}
