@@ -14,7 +14,7 @@ You can download and install smc-llc with its dependencies to your GOPATH or
 GOBIN with the go tool:
 
 ```console
-$ go get github.com/hwipl/smc-llc
+$ go get github.com/hwipl/smc-llc/cmd/smc-llc
 ```
 
 ## Usage
