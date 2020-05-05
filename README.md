@@ -29,6 +29,17 @@ can specify the interface `eth0` with:
 $ smc-llc -i eth0
 ```
 
+Alternatively, you can read packets from a pcap file with the option `-f`.
+
+Hint: For example, you can capture packets directly from a local Mellanox
+infiniband device with the tool [ibdump](https://github.com/Mellanox/ibdump)
+and load the resulting pcap file, e.g., `sniffer.pcap`, in smc-llc with the
+following command:
+
+```console
+$ smc-llc -f sniffer.pcap
+```
+
 Options of the `smc-llc` command:
 
 ```
