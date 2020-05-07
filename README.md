@@ -19,28 +19,7 @@ $ go get github.com/hwipl/smc-llc/cmd/smc-llc
 
 ## Usage
 
-You can run smc-llc with the `smc-llc` command. Make sure your user has the
-permission to capture traffic on the network interface.
-
-You can specify the network interface with the option `-i`. For example, you
-can specify the interface `eth0` with:
-
-```console
-$ smc-llc -i eth0
-```
-
-Alternatively, you can read packets from a pcap file with the option `-f`.
-
-Hint: For example, you can capture packets directly from a local Mellanox
-infiniband device with the tool [ibdump](https://github.com/Mellanox/ibdump)
-and load the resulting pcap file, e.g., `sniffer.pcap`, in smc-llc with the
-following command:
-
-```console
-$ smc-llc -f sniffer.pcap
-```
-
-Options of the `smc-llc` command:
+You can run `smc-llc` with the following command line arguments:
 
 ```
   -f file
@@ -76,4 +55,32 @@ Options of the `smc-llc` command:
         show reserved message fields
   -show-timestamps
         show timestamps of messages (default true)
+```
+
+### Examples
+
+You can specify the network interface with the command line argument `-i`. Make
+sure your user has the permission to capture traffic on the network interface.
+For example, you can capture packets on the interface `eth0` with the following
+command as the root user:
+
+```console
+# smc-llc -i eth0
+```
+
+Alternatively, you can read packets from a pcap file with the command line
+argument `-f`. For example you can read the packets from pcap file `dump.pcap`
+with the following command:
+
+```console
+$ smc-llc -f dump.pcap
+```
+
+You can also capture packets directly from a local Mellanox infiniband device
+with the tool [ibdump](https://github.com/Mellanox/ibdump) and load the
+resulting pcap file, e.g., `sniffer.pcap`, in smc-llc with the following
+command:
+
+```console
+$ smc-llc -f sniffer.pcap
 ```
