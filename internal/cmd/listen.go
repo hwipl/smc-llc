@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/gopacket"
-	"github.com/hwipl/smc-go/pkg/pcap"
+	"github.com/hwipl/packet-go/pkg/pcap"
 )
 
 type handler struct{}
