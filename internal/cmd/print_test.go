@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/gopacket/layers"
+	"github.com/gopacket/gopacket/layers"
 	"github.com/hwipl/smc-go/pkg/llc"
 	"github.com/hwipl/smc-go/pkg/roce"
 )

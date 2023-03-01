@@ -3,7 +3,7 @@ package cmd
 import (
 	"time"
 
-	"github.com/google/gopacket"
+	"github.com/gopacket/gopacket"
 	"github.com/hwipl/packet-go/pkg/pcap"
 )
 
