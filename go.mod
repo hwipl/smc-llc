@@ -1,14 +1,14 @@
 module github.com/hwipl/smc-llc
 
-go 1.25.0
+go 1.26.0
 
 require (
-	github.com/gopacket/gopacket v1.7.0
-	github.com/hwipl/packet-go v0.0.0-20260710055156-efa959eafb02
-	github.com/hwipl/smc-go v0.0.0-20240924114116-ca917b025fe2
+	github.com/gopacket/gopacket v1.7.7
+	github.com/hwipl/packet-go v0.0.0-20261111201038-ad5ca770f961
+	github.com/hwipl/smc-go v0.0.0-20261115112041-8b3d9f0fd834
 )
 
 require (
 	golang.org/x/net v0.55.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 )
